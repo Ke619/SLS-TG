@@ -24,7 +24,6 @@ jobs:
             $(pkg-config --cflags --libs gtk+-3.0 gstreamer-1.0)
           chmod +x AppDir/usr/bin/sls_tg
           chmod +x AppDir/AppRun
-          cp headcrab.png AppDir/usr/bin/headcrab.png
           cp BGM.wav AppDir/usr/bin/BGM.wav
           cp Click.mp3 AppDir/usr/bin/Click.mp3
           cp Hover.mp3 AppDir/usr/bin/Hover.mp3
