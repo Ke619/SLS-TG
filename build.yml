@@ -1,0 +1,47 @@
+name: Build AppImage
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc libgtk-3-dev pkg-config libfuse2 libgstreamer1.0-dev
+
+      - name: Compile
+        run: |
+          gcc sls_tg.c -o AppDir/usr/bin/sls_tg \
+            $(pkg-config --cflags --libs gtk+-3.0 gstreamer-1.0)
+          chmod +x AppDir/usr/bin/sls_tg
+          chmod +x AppDir/AppRun
+          cp headcrab.png AppDir/usr/bin/headcrab.png
+          cp BGM.wav AppDir/usr/bin/BGM.wav
+          cp Click.mp3 AppDir/usr/bin/Click.mp3
+          cp Hover.mp3 AppDir/usr/bin/Hover.mp3
+          cp ticket-grabber AppDir/usr/bin/ticket-grabber
+          chmod +x AppDir/usr/bin/ticket-grabber
+
+      - name: Download appimagetool
+        run: |
+          curl -Lo appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+          chmod +x appimagetool
+
+      - name: Build AppImage
+        run: |
+          ARCH=x86_64 ./appimagetool AppDir SLS-TG-x86_64.AppImage
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SLS-TG
+          path: SLS-TG-x86_64.AppImage
