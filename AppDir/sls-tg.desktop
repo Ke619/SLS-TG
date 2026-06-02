@@ -1,0 +1,8 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=SLS-TG
+Exec=sls_tg
+Icon=headcrab
+Type=Application
+Categories=Utility;
+Terminal=false
