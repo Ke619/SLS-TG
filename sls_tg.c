@@ -288,7 +288,8 @@ int main(int argc, char *argv[]) {
     gtk_window_set_resizable(GTK_WINDOW(w->window), FALSE);
     gtk_window_set_decorated(GTK_WINDOW(w->window), FALSE);
     gtk_container_set_border_width(GTK_CONTAINER(w->window), 0);
-    gtk_window_set_icon_from_file(GTK_WINDOW(w->window), w->icon_path, NULL);
+    if (g_file_test(w->icon_path, G_FILE_TEST_EXISTS))
+        gtk_window_set_icon_from_file(GTK_WINDOW(w->window), w->icon_path, NULL);
     g_signal_connect(w->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     w->outer_frame = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -330,8 +331,9 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), content, TRUE, TRUE, 0);
 
     /* Logo */
-    GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(w->icon_path, 110, 110, TRUE, NULL);
-    w->logo_image = gtk_image_new_from_pixbuf(pb);
+    GdkPixbuf *pb = g_file_test(w->icon_path, G_FILE_TEST_EXISTS) ?
+        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 110, 110, TRUE, NULL) : NULL;
+    w->logo_image = pb ? gtk_image_new_from_pixbuf(pb) : gtk_image_new();
     gtk_widget_set_app_paintable(w->logo_image, TRUE);
     GtkWidget *event_box = gtk_event_box_new();
     gtk_widget_set_name(event_box, "logo_box");
