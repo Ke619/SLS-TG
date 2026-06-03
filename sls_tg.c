@@ -403,6 +403,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(left), lbl_user, FALSE, FALSE, 6);
     w->entry_username = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_username), "Steam username");
+    gtk_widget_set_size_request(w->entry_username, -1, 36);
     gtk_box_pack_start(GTK_BOX(left), w->entry_username, FALSE, FALSE, 0);
 
     GtkWidget *lbl_pass = gtk_label_new("PASSWORD");
@@ -412,6 +413,7 @@ int main(int argc, char *argv[]) {
     w->entry_password = gtk_entry_new();
     gtk_entry_set_visibility(GTK_ENTRY(w->entry_password), FALSE);
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_password), "Steam password");
+    gtk_widget_set_size_request(w->entry_password, -1, 36);
     gtk_box_pack_start(GTK_BOX(left), w->entry_password, FALSE, FALSE, 0);
 
     GtkWidget *lbl_appid = gtk_label_new("APP ID");
@@ -420,6 +422,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(left), lbl_appid, FALSE, FALSE, 6);
     w->entry_appid = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
+    gtk_widget_set_size_request(w->entry_appid, -1, 36);
     gtk_box_pack_start(GTK_BOX(left), w->entry_appid, FALSE, FALSE, 0);
 
 
