@@ -62,6 +62,8 @@ static const char *CSS =
     "entry { background-color: #0d0000; color: #cc2200; border: 1px solid #cc2200;"
     "  border-radius: 0; padding: 6px 10px; font-size: 13px; min-height: 32px; }"
     "entry:focus { border-color: #ff3300; }"
+    "entry { -gtk-icon-source: none; }"
+    "entry.password { font-family: monospace; }"
     "#sep { background-color: #2a0000; min-width: 1px; }"
     "#footer { color: #aaaaaa; font-size: 10px; }"
     "#dim_layer { background-color: rgba(0,0,0,0.75); }";
@@ -400,7 +402,7 @@ int main(int argc, char *argv[]) {
     /* Field group helper: each group is a fixed-height box */
     /* USERNAME */
     GtkWidget *grp_user = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_widget_set_size_request(grp_user, -1, 58);
+    gtk_widget_set_size_request(grp_user, -1, 55);
     GtkWidget *lbl_user = gtk_label_new("USERNAME");
     gtk_widget_set_name(lbl_user, "field_label");
     gtk_widget_set_halign(lbl_user, GTK_ALIGN_START);
@@ -412,7 +414,7 @@ int main(int argc, char *argv[]) {
 
     /* PASSWORD */
     GtkWidget *grp_pass = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_widget_set_size_request(grp_pass, -1, 58);
+    gtk_widget_set_size_request(grp_pass, -1, 55);
     GtkWidget *lbl_pass = gtk_label_new("PASSWORD");
     gtk_widget_set_name(lbl_pass, "field_label");
     gtk_widget_set_halign(lbl_pass, GTK_ALIGN_START);
@@ -425,7 +427,7 @@ int main(int argc, char *argv[]) {
 
     /* APP ID */
     GtkWidget *grp_appid = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_widget_set_size_request(grp_appid, -1, 58);
+    gtk_widget_set_size_request(grp_appid, -1, 55);
     GtkWidget *lbl_appid = gtk_label_new("APP ID");
     gtk_widget_set_name(lbl_appid, "field_label");
     gtk_widget_set_halign(lbl_appid, GTK_ALIGN_START);
