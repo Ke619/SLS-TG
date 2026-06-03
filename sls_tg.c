@@ -35,10 +35,10 @@ typedef struct {
 } AppWidgets;
 
 static const char *CSS =
-    "window { background: linear-gradient(to bottom, #1b2838, #2a475e); }"
-    "image { background-color: transparent; }"
+    "window { background-color: #cc2200; }"
+    "image { background-color: #000000; }"
     "#logo_box { background-color: transparent; }"
-    "#outer_frame { background: linear-gradient(to bottom, #1b2838, #2a475e); margin: 3px; }"
+    "#outer_frame { background-color: #000000; margin: 3px; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: #0d0000; color: #cc2200; border: 2px solid #cc2200;"
@@ -313,7 +313,7 @@ int main(int argc, char *argv[]) {
 
     w->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(w->window), "SLS-TG");
-    gtk_window_set_default_size(GTK_WINDOW(w->window), 750, 420);
+    gtk_window_set_default_size(GTK_WINDOW(w->window), 450, 620);
     gtk_window_set_resizable(GTK_WINDOW(w->window), FALSE);
     gtk_window_set_decorated(GTK_WINDOW(w->window), FALSE);
     gtk_container_set_border_width(GTK_CONTAINER(w->window), 0);
@@ -358,55 +358,25 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_margin_top(header, 6);
     gtk_widget_set_margin_bottom(header, 8);
 
-    GdkPixbuf *pb = g_file_test(w->icon_path, G_FILE_TEST_EXISTS) ?
-        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 60, 60, TRUE, NULL) : NULL;
-    w->logo_image = pb ? gtk_image_new_from_pixbuf(pb) : gtk_image_new();
-    gtk_widget_set_app_paintable(w->logo_image, TRUE);
-    GtkWidget *event_box = gtk_event_box_new();
-    gtk_widget_set_name(event_box, "logo_box");
-    gtk_container_add(GTK_CONTAINER(event_box), w->logo_image);
-    gtk_widget_add_events(event_box, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-    g_signal_connect(event_box, "button-press-event", G_CALLBACK(on_logo_press), w);
-    g_signal_connect(event_box, "button-release-event", G_CALLBACK(on_logo_release), w);
-    GtkWidget *logo_center = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_set_halign(logo_center, GTK_ALIGN_CENTER);
-    gtk_box_pack_start(GTK_BOX(logo_center), event_box, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(header), logo_center, FALSE, FALSE, 0);
-
-    GtkWidget *title = gtk_label_new("SLS-TG");
-    gtk_widget_set_name(title, "title");
-    gtk_label_set_xalign(GTK_LABEL(title), 0.5);
-    gtk_box_pack_start(GTK_BOX(header), title, FALSE, FALSE, 0);
-
-    GtkWidget *subtitle = gtk_label_new("TICKET GRABBER");
-    gtk_widget_set_name(subtitle, "subtitle");
-    gtk_label_set_xalign(GTK_LABEL(subtitle), 0.5);
-    gtk_box_pack_start(GTK_BOX(header), subtitle, FALSE, FALSE, 0);
+    /* Logo placeholder - space reserved for bigger logo */
+    GtkWidget *logo_placeholder = gtk_label_new("");
+    gtk_widget_set_size_request(logo_placeholder, -1, 160);
+    gtk_box_pack_start(GTK_BOX(header), logo_placeholder, FALSE, FALSE, 0);
 
     gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
 
 
-    /* Two-column middle section */
-    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
-
-    /* LEFT: fields */
+    /* Single column layout */
     GtkWidget *left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_start(left, 24);
-    gtk_widget_set_margin_end(left, 16);
-    gtk_widget_set_margin_top(left, 12);
-    gtk_widget_set_margin_bottom(left, 12);
-    gtk_widget_set_size_request(left, 355, -1);
-    gtk_box_pack_start(GTK_BOX(hbox), left, FALSE, FALSE, 0);
+    gtk_widget_set_margin_end(left, 24);
+    gtk_widget_set_margin_top(left, 8);
+    gtk_box_pack_start(GTK_BOX(vbox), left, FALSE, FALSE, 0);
 
     /* Field group helper: each group is a fixed-height box */
     /* USERNAME */
     GtkWidget *grp_user = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
-    GtkWidget *lbl_user = gtk_label_new("USERNAME");
-    gtk_widget_set_name(lbl_user, "field_label");
-    gtk_widget_set_halign(lbl_user, GTK_ALIGN_START);
-    gtk_box_pack_start(GTK_BOX(grp_user), lbl_user, FALSE, FALSE, 0);
     w->entry_username = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_username), "Steam username");
     gtk_widget_set_size_request(w->entry_username, -1, 36);
@@ -417,10 +387,6 @@ int main(int argc, char *argv[]) {
     /* PASSWORD */
     GtkWidget *grp_pass = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
-    GtkWidget *lbl_pass = gtk_label_new("PASSWORD");
-    gtk_widget_set_name(lbl_pass, "field_label");
-    gtk_widget_set_halign(lbl_pass, GTK_ALIGN_START);
-    gtk_box_pack_start(GTK_BOX(grp_pass), lbl_pass, FALSE, FALSE, 0);
     w->entry_password = gtk_entry_new();
     gtk_entry_set_visibility(GTK_ENTRY(w->entry_password), FALSE);
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_password), "Steam password");
@@ -432,24 +398,19 @@ int main(int argc, char *argv[]) {
     /* APP ID */
     GtkWidget *grp_appid = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
-    GtkWidget *lbl_appid = gtk_label_new("APP ID");
-    gtk_widget_set_name(lbl_appid, "field_label");
-    gtk_widget_set_halign(lbl_appid, GTK_ALIGN_START);
-    gtk_box_pack_start(GTK_BOX(grp_appid), lbl_appid, FALSE, FALSE, 0);
     w->entry_appid = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "App ID");
     gtk_widget_set_size_request(w->entry_appid, -1, 36);
     gtk_box_pack_start(GTK_BOX(grp_appid), w->entry_appid, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(left), grp_appid, FALSE, FALSE, 4);
 
 
-    /* RIGHT: log */
-    GtkWidget *right = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_set_margin_start(right, 12);
-    gtk_widget_set_margin_end(right, 16);
-    gtk_widget_set_margin_top(right, 12);
-    gtk_widget_set_margin_bottom(right, 12);
-    gtk_box_pack_start(GTK_BOX(hbox), right, TRUE, TRUE, 0);
+    /* Log below fields */
+    GtkWidget *log_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_widget_set_margin_start(log_box, 24);
+    gtk_widget_set_margin_end(log_box, 24);
+    gtk_widget_set_margin_top(log_box, 8);
+    gtk_box_pack_start(GTK_BOX(vbox), log_box, TRUE, TRUE, 0);
 
     GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
@@ -461,13 +422,13 @@ int main(int argc, char *argv[]) {
     gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(w->log_view), FALSE);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(w->log_view), GTK_WRAP_WORD_CHAR);
     gtk_container_add(GTK_CONTAINER(scroll), w->log_view);
-    gtk_box_pack_start(GTK_BOX(right), scroll, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(log_box), scroll, TRUE, TRUE, 0);
 
     /* Status below log */
     w->status_label = gtk_label_new("READY");
     gtk_widget_set_name(w->status_label, "status");
     gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
-    gtk_box_pack_start(GTK_BOX(right), w->status_label, FALSE, FALSE, 4);
+    gtk_box_pack_start(GTK_BOX(log_box), w->status_label, FALSE, FALSE, 4);
 
     GtkTextIter end;
     gtk_text_buffer_get_end_iter(w->log_buf, &end);
@@ -491,9 +452,13 @@ int main(int argc, char *argv[]) {
     g_signal_connect(w->btn, "clicked", G_CALLBACK(on_btn_click), w);
     g_signal_connect(w->btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
 
+    gtk_widget_set_name(w->status_label, "status");
+    gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
+    gtk_box_pack_start(GTK_BOX(bottom), w->status_label, FALSE, FALSE, 4);
+
     /* Footer goes directly into vbox at the very bottom */
     GtkWidget *footer_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_set_margin_start(footer_box, 16);
+    gtk_widget_set_halign(footer_box, GTK_ALIGN_CENTER);
     gtk_widget_set_margin_bottom(footer_box, 6);
     gtk_box_pack_end(GTK_BOX(vbox), footer_box, FALSE, FALSE, 0);
     w->footer_link = gtk_label_new(
