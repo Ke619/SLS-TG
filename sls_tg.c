@@ -607,16 +607,6 @@ int main(int argc, char *argv[]) {
 
 
     /* Footer goes directly into vbox at the very bottom */
-    /* Bottom row: footer centered, X on right */
-    GtkWidget *bottom_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_set_margin_bottom(bottom_row, 4);
-    gtk_box_pack_end(GTK_BOX(vbox), bottom_row, FALSE, FALSE, 0);
-
-    /* Spacer left */
-    GtkWidget *spacer_left = gtk_label_new("");
-    gtk_widget_set_hexpand(spacer_left, TRUE);
-    gtk_box_pack_start(GTK_BOX(bottom_row), spacer_left, TRUE, TRUE, 0);
-
     GtkWidget *footer_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 
     /* Close button bottom right */
@@ -631,20 +621,25 @@ int main(int argc, char *argv[]) {
     gtk_label_set_track_visited_links(GTK_LABEL(w->footer_link), FALSE);
     gtk_widget_set_name(w->footer_link, "footer");
     gtk_box_pack_start(GTK_BOX(footer_box), w->footer_link, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(bottom_row), footer_box, FALSE, FALSE, 0);
 
-    /* Spacer right */
-    GtkWidget *spacer_right = gtk_label_new("");
-    gtk_widget_set_hexpand(spacer_right, TRUE);
-    gtk_box_pack_start(GTK_BOX(bottom_row), spacer_right, TRUE, TRUE, 0);
+    /* Bottom overlay row: footer + X button pinned to bottom of window */
+    GtkWidget *bottom_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_widget_set_halign(bottom_row, GTK_ALIGN_FILL);
+    gtk_widget_set_valign(bottom_row, GTK_ALIGN_END);
+    gtk_widget_set_margin_bottom(bottom_row, 6);
+    gtk_widget_set_margin_start(bottom_row, 8);
+    gtk_widget_set_margin_end(bottom_row, 8);
 
-    /* Close button on right */
+    gtk_box_pack_start(GTK_BOX(bottom_row), footer_box, TRUE, TRUE, 0);
+
     w->close_btn = gtk_button_new_with_label("✕");
     gtk_widget_set_name(w->close_btn, "close_btn");
     g_signal_connect(w->close_btn, "clicked", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(w->close_btn, "clicked", G_CALLBACK(on_btn_click), w);
     g_signal_connect(w->close_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
     gtk_box_pack_end(GTK_BOX(bottom_row), w->close_btn, FALSE, FALSE, 0);
+
+    gtk_overlay_add_overlay(GTK_OVERLAY(w->overlay), bottom_row);
 
     gtk_widget_show_all(w->window);
 
