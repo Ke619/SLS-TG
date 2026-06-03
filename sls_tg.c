@@ -55,8 +55,8 @@ static const char *CSS =
     "#run_btn:hover { background-color: rgba(0,0,0,0.55); color: #ffffff; }"
     "#run_btn:active { background-color: rgba(0,0,0,0.7); color: #ffffff; }"
     "#run_btn:disabled { background-color: transparent; color: #888; border-color: #888; }"
-    "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200; margin-top: 3px; margin-right: 3px;"
-    "  font-size: 18px; font-weight: bold; padding: 2px 8px; min-width: 28px; min-height: 28px; border-radius: 0; }"
+    "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200; margin-bottom: 6px; margin-right: 6px; border-radius: 50%;"
+    "  font-size: 14px; font-weight: bold; padding: 0; min-width: 28px; min-height: 28px; }"
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
     "#topbar { background-color: transparent; }"
@@ -394,7 +394,7 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     int win_w = gtk_widget_get_allocated_width(widget);
     int win_h = gtk_widget_get_allocated_height(widget);
     int border = 3;
-    int bottom_border = 35;
+    int bottom_border = 25;
     int inner_w = win_w - border * 2;
     int inner_h = win_h - border - bottom_border;
     /* Fill whole widget black first */
@@ -506,12 +506,7 @@ int main(int argc, char *argv[]) {
     GtkWidget *spacer_top = gtk_label_new("");
     gtk_widget_set_hexpand(spacer_top, TRUE);
     gtk_box_pack_start(GTK_BOX(topbar), spacer_top, TRUE, TRUE, 0);
-    w->close_btn = gtk_button_new_with_label("✕");
-    gtk_widget_set_name(w->close_btn, "close_btn");
-    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(on_btn_click), w);
-    g_signal_connect(w->close_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
-    gtk_box_pack_end(GTK_BOX(topbar), w->close_btn, FALSE, FALSE, 0);
+    /* close button moved to bottom right */
     gtk_box_pack_start(GTK_BOX(vbox), topbar, FALSE, FALSE, 0);
 
     /* Header - centered logo, title, subtitle */
@@ -613,6 +608,16 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_halign(footer_box, GTK_ALIGN_CENTER);
     gtk_widget_set_margin_bottom(footer_box, 6);
     gtk_box_pack_end(GTK_BOX(vbox), footer_box, FALSE, FALSE, 0);
+
+    /* Close button bottom right */
+    w->close_btn = gtk_button_new_with_label("✕");
+    gtk_widget_set_name(w->close_btn, "close_btn");
+    gtk_widget_set_halign(w->close_btn, GTK_ALIGN_END);
+    gtk_widget_set_valign(w->close_btn, GTK_ALIGN_END);
+    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(on_btn_click), w);
+    g_signal_connect(w->close_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
+    gtk_box_pack_end(GTK_BOX(vbox), w->close_btn, FALSE, FALSE, 0);
     w->footer_link = gtk_label_new(
         "<a href='https://github.com/AceSLS/SLSsteam'>"
         "<span foreground='#aaaaaa' size='medium' underline='none'>SLSsteam</span></a>"
