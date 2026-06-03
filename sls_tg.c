@@ -56,7 +56,7 @@ static const char *CSS =
     "#run_btn:active { background-color: rgba(0,0,0,0.7); color: #ffffff; }"
     "#run_btn:disabled { background-color: transparent; color: #888; border-color: #888; }"
     "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200; margin-bottom: 6px; margin-right: 6px; border-radius: 50%;"
-    "  font-size: 14px; font-weight: bold; padding: 0; min-width: 28px; min-height: 28px; }"
+    "  font-size: 11px; font-weight: bold; padding: 0; min-width: 20px; min-height: 20px; }"
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
     "#topbar { background-color: transparent; }"
@@ -394,7 +394,7 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     int win_w = gtk_widget_get_allocated_width(widget);
     int win_h = gtk_widget_get_allocated_height(widget);
     int border = 3;
-    int bottom_border = 35;
+    int bottom_border = 45;
     int inner_w = win_w - border * 2;
     int inner_h = win_h - border - bottom_border;
     /* Fill whole widget black first */
