@@ -401,20 +401,21 @@ int main(int argc, char *argv[]) {
 
     /* Field group helper: each group is a fixed-height box */
     /* USERNAME */
-    GtkWidget *grp_user = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_widget_set_size_request(grp_user, -1, 55);
+    GtkWidget *grp_user = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+
     GtkWidget *lbl_user = gtk_label_new("USERNAME");
     gtk_widget_set_name(lbl_user, "field_label");
     gtk_widget_set_halign(lbl_user, GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(grp_user), lbl_user, FALSE, FALSE, 0);
     w->entry_username = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_username), "Steam username");
+    gtk_widget_set_size_request(w->entry_username, -1, 36);
     gtk_box_pack_start(GTK_BOX(grp_user), w->entry_username, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(left), grp_user, FALSE, FALSE, 4);
 
     /* PASSWORD */
-    GtkWidget *grp_pass = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_widget_set_size_request(grp_pass, -1, 55);
+    GtkWidget *grp_pass = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+
     GtkWidget *lbl_pass = gtk_label_new("PASSWORD");
     gtk_widget_set_name(lbl_pass, "field_label");
     gtk_widget_set_halign(lbl_pass, GTK_ALIGN_START);
@@ -422,18 +423,20 @@ int main(int argc, char *argv[]) {
     w->entry_password = gtk_entry_new();
     gtk_entry_set_visibility(GTK_ENTRY(w->entry_password), FALSE);
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_password), "Steam password");
+    gtk_widget_set_size_request(w->entry_password, -1, 36);
     gtk_box_pack_start(GTK_BOX(grp_pass), w->entry_password, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(left), grp_pass, FALSE, FALSE, 4);
 
     /* APP ID */
-    GtkWidget *grp_appid = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_widget_set_size_request(grp_appid, -1, 55);
+    GtkWidget *grp_appid = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+
     GtkWidget *lbl_appid = gtk_label_new("APP ID");
     gtk_widget_set_name(lbl_appid, "field_label");
     gtk_widget_set_halign(lbl_appid, GTK_ALIGN_START);
     gtk_box_pack_start(GTK_BOX(grp_appid), lbl_appid, FALSE, FALSE, 0);
     w->entry_appid = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
+    gtk_widget_set_size_request(w->entry_appid, -1, 36);
     gtk_box_pack_start(GTK_BOX(grp_appid), w->entry_appid, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(left), grp_appid, FALSE, FALSE, 4);
 
