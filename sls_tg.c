@@ -24,7 +24,6 @@ typedef struct {
     GtkWidget *outer_frame;
     GtkWidget *overlay;
     GtkWidget *dim_layer;
-    GtkWidget *footer_link;
     GstElement *music_player;
     GstElement *sfx_click;
     GstElement *sfx_hover;
@@ -59,6 +58,9 @@ static const char *CSS =
     "  font-size: 11px; font-weight: bold; padding: 0; min-width: 20px; min-height: 20px; }"
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
+    "#info_btn { background: #5dade2; color: #ffffff; border: 2px solid #5dade2; border-radius: 50%; font-size: 11px; font-weight: bold; padding: 0; min-width: 20px; min-height: 20px; }"
+    "#info_btn:hover { background: #85c1e9; border-color: #85c1e9; }"
+    "#info_btn:active { background: #2e86c1; border-color: #2e86c1; }"
     "#topbar { background-color: transparent; }"
     "#header { background-color: transparent; }"
     "#status { color: #e6cc00; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
@@ -609,16 +611,10 @@ int main(int argc, char *argv[]) {
 
     /* Close button bottom right */
 
-    w->footer_link = gtk_label_new(
-        "<a href='https://github.com/AceSLS/SLSsteam'>"
-        "<span foreground='#aaaaaa' size='medium' underline='none'>SLSsteam</span></a>"
-        " ❖ "
-        "<a href='https://github.com/Ke619/SLS-TG'>"
-        "<span foreground='#aaaaaa' size='medium' underline='none'>SLS-TG</span></a>");
-    gtk_label_set_use_markup(GTK_LABEL(w->footer_link), TRUE);
-    gtk_label_set_track_visited_links(GTK_LABEL(w->footer_link), FALSE);
-    gtk_widget_set_name(w->footer_link, "footer");
-    gtk_box_pack_start(GTK_BOX(footer_box), w->footer_link, FALSE, FALSE, 0);
+    GtkWidget *info_btn = gtk_button_new_with_label("i");
+    gtk_widget_set_name(info_btn, "info_btn");
+    g_signal_connect_swapped(info_btn, "clicked", G_CALLBACK(g_app_info_launch_default_for_uri), "https://github.com/Ke619/SLS-TG");
+    gtk_box_pack_start(GTK_BOX(footer_box), info_btn, FALSE, FALSE, 0);
 
     /* Bottom overlay row: footer + X button pinned to bottom of window */
     GtkWidget *bottom_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
