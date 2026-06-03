@@ -47,7 +47,7 @@ static const char *CSS =
     "window { background-color: #000000; }"
     "image { background-color: transparent; }"
     "#logo_box { background-color: transparent; }"
-    "#outer_frame { background-color: transparent; margin: 3px; }"
+    "#outer_frame { background-color: transparent; margin: 3px; border: none; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: rgba(0,0,0,0.4); color: #ffffff; border: 2px solid #000000;"
@@ -467,8 +467,6 @@ int main(int argc, char *argv[]) {
     snprintf(bg_path, sizeof(bg_path), "%s/Bg.png", saved_dir);
     w->bg_pixbuf = g_file_test(bg_path, G_FILE_TEST_EXISTS) ?
         gdk_pixbuf_new_from_file(bg_path, NULL) : NULL;
-    gtk_widget_set_app_paintable(w->window, TRUE);
-    g_signal_connect(w->window, "draw", G_CALLBACK(on_draw), w);
     gtk_widget_set_app_paintable(w->outer_frame, TRUE);
     g_signal_connect(w->outer_frame, "draw", G_CALLBACK(on_draw), w);
 
