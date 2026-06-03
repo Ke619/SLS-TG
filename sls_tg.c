@@ -263,7 +263,12 @@ static gboolean apply_status(gpointer data) {
         w->dot_timer = 0;
     }
     gtk_label_set_text(GTK_LABEL(w->status_label), su->status);
-    gtk_widget_set_name(w->status_label, su->is_error ? "status_error" : "status");
+    if (su->is_error)
+        gtk_widget_set_name(w->status_label, "status_error");
+    else if (strcmp(su->status, "TICKET GENERATED!") == 0)
+        gtk_widget_set_name(w->status_label, "status_done");
+    else
+        gtk_widget_set_name(w->status_label, "status");
     if (su->is_error) {
         w->error_set = 1;
         gtk_widget_set_sensitive(w->btn, TRUE);
