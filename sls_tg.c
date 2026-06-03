@@ -394,8 +394,9 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     int win_w = gtk_widget_get_allocated_width(widget);
     int win_h = gtk_widget_get_allocated_height(widget);
     int border = 3;
+    int bottom_border = 35;
     int inner_w = win_w - border * 2;
-    int inner_h = win_h - border * 2;
+    int inner_h = win_h - border - bottom_border;
     /* Fill whole widget black first */
     cairo_set_source_rgb(cr, 0, 0, 0);
     cairo_paint(cr);
