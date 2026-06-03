@@ -35,6 +35,10 @@ typedef struct {
     int error_set;
     char bin_path[512];
     char icon_path[512];
+    char logo_idle[512];
+    char logo_processing[512];
+    char logo_success[512];
+    char logo_error[512];
 } AppWidgets;
 
 static const char *CSS =
@@ -183,6 +187,28 @@ static gboolean append_log(gpointer data) {
     return G_SOURCE_REMOVE;
 }
 
+static void set_logo(AppWidgets *w, const char *path) {
+    if (!g_file_test(path, G_FILE_TEST_EXISTS)) return;
+    GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(path, 160, 160, TRUE, NULL);
+    if (pb) gtk_image_set_from_pixbuf(GTK_IMAGE(w->logo_image), pb);
+}
+
+typedef struct { AppWidgets *w; char path[512]; } LogoUpdate;
+
+static gboolean apply_logo(gpointer data) {
+    LogoUpdate *lu = (LogoUpdate *)data;
+    set_logo(lu->w, lu->path);
+    free(lu);
+    return G_SOURCE_REMOVE;
+}
+
+static void update_logo(AppWidgets *w, const char *path) {
+    LogoUpdate *lu = malloc(sizeof(LogoUpdate));
+    lu->w = w;
+    strncpy(lu->path, path, sizeof(lu->path)-1);
+    g_idle_add(apply_logo, lu);
+}
+
 static gboolean on_done(gpointer data) {
     char **args = (char **)data;
     AppWidgets *w = (AppWidgets *)args[0];
@@ -192,9 +218,11 @@ static gboolean on_done(gpointer data) {
     if (code == 0) {
         gtk_label_set_text(GTK_LABEL(w->status_label), "TICKET GENERATED!");
         gtk_widget_set_name(w->status_label, "status_done");
+        set_logo(w, w->logo_success);
     } else if (!w->error_set) {
         gtk_label_set_text(GTK_LABEL(w->status_label), "CRITICAL ERROR");
         gtk_widget_set_name(w->status_label, "status_error");
+        set_logo(w, w->logo_error);
     }
     free(args[1]);
     free(args);
@@ -236,6 +264,11 @@ static gboolean apply_status(gpointer data) {
     if (su->is_error) {
         w->error_set = 1;
         gtk_widget_set_sensitive(w->btn, TRUE);
+        set_logo(w, w->logo_error);
+    } else if (strcmp(su->status, "TICKET GENERATED!") == 0) {
+        set_logo(w, w->logo_success);
+    } else {
+        set_logo(w, w->logo_processing);
     }
     free(su);
     return G_SOURCE_REMOVE;
@@ -330,6 +363,7 @@ static void on_run_clicked(GtkWidget *btn, gpointer data) {
     w->dot_timer = g_timeout_add(500, on_dot_tick, w);
     gtk_widget_set_name(w->status_label, "status");
     w->error_set = 0;
+    set_logo(w, w->logo_processing);
     gtk_text_buffer_set_text(w->log_buf, "", -1);
     ThreadData *td = malloc(sizeof(ThreadData));
     td->w = w;
@@ -356,7 +390,11 @@ int main(int argc, char *argv[]) {
     w->hold_timer = 0;
 
     char *dir = g_path_get_dirname(argv[0]);
-    snprintf(w->icon_path, sizeof(w->icon_path), "%s/headcrab.png", dir);
+    snprintf(w->icon_path, sizeof(w->icon_path), "%s/L0.png", dir);
+    snprintf(w->logo_idle, sizeof(w->logo_idle), "%s/L0.png", dir);
+    snprintf(w->logo_processing, sizeof(w->logo_processing), "%s/L1.png", dir);
+    snprintf(w->logo_success, sizeof(w->logo_success), "%s/L3.png", dir);
+    snprintf(w->logo_error, sizeof(w->logo_error), "%s/L2.png", dir);
     snprintf(w->bin_path,  sizeof(w->bin_path),  "%s/ticket-grabber", dir);
 
     char bgm_uri[512], click_uri[512], hover_uri[512];
