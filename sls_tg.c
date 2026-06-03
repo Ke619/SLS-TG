@@ -269,8 +269,10 @@ static gpointer run_thread(gpointer data) {
         log_from_thread(w, line);
 
         if (strstr(line, "Connected to Steam")) {
-            update_status(w, "AWAITING STEAM GUARD AUTHENTICATION", 0, 1);
+            update_status(w, "LOGGING IN.", 0, 0);
         } else if (strstr(line, "Logged in as")) {
+            update_status(w, "AWAITING STEAM GUARD AUTHENTICATION", 0, 1);
+        } else if (strstr(line, "Account Info received")) {
             update_status(w, "GENERATING YOUR TICKET.", 0, 0);
 
         } else if (strstr(line, "Saved")) {
