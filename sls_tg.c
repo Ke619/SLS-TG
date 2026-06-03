@@ -54,7 +54,7 @@ static const char *CSS =
     "#run_btn:hover { background-color: rgba(0,0,0,0.55); color: #ffffff; }"
     "#run_btn:active { background-color: rgba(0,0,0,0.7); color: #ffffff; }"
     "#run_btn:disabled { background-color: transparent; color: #888; border-color: #888; }"
-    "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200; margin-bottom: 6px; margin-right: 6px; border-radius: 50%;"
+    "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200; border-radius: 50%;"
     "  font-size: 11px; font-weight: bold; padding: 0; min-width: 20px; min-height: 20px; }"
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
@@ -655,8 +655,8 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_halign(bottom_row, GTK_ALIGN_FILL);
     gtk_widget_set_valign(bottom_row, GTK_ALIGN_END);
     gtk_widget_set_margin_bottom(bottom_row, 6);
-    gtk_widget_set_margin_start(bottom_row, 8);
-    gtk_widget_set_margin_end(bottom_row, 8);
+    gtk_widget_set_margin_start(bottom_row, 10);
+    gtk_widget_set_margin_end(bottom_row, 10);
 
     gtk_box_pack_start(GTK_BOX(bottom_row), footer_box, TRUE, TRUE, 0);
 
