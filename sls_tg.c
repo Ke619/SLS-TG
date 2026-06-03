@@ -233,7 +233,10 @@ static gboolean apply_status(gpointer data) {
     }
     gtk_label_set_text(GTK_LABEL(w->status_label), su->status);
     gtk_widget_set_name(w->status_label, su->is_error ? "status_error" : "status");
-    if (su->is_error) w->error_set = 1;
+    if (su->is_error) {
+        w->error_set = 1;
+        gtk_widget_set_sensitive(w->btn, TRUE);
+    }
     free(su);
     return G_SOURCE_REMOVE;
 }
