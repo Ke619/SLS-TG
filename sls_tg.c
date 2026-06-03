@@ -617,7 +617,7 @@ int main(int argc, char *argv[]) {
 
     /* Close button bottom right */
 
-    GtkWidget *info_btn = gtk_button_new_with_label("i");
+    GtkWidget *info_btn = gtk_button_new_with_label("ⓘ");
     gtk_widget_set_name(info_btn, "info_btn");
     gtk_widget_set_size_request(info_btn, 26, 26);
     g_signal_connect(info_btn, "clicked", G_CALLBACK(on_info_clicked), w);
