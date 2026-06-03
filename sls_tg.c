@@ -59,7 +59,7 @@ static const char *CSS =
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
     "#info_btn { background: #5dade2; color: #ffffff; border: 2px solid #5dade2; border-radius: 50%; font-size: 11px; font-weight: bold; padding: 0; min-width: 22px; min-height: 22px; -gtk-outline-radius: 50%; }"
-    "#info_btn:hover { background: #85c1e9; border-color: #85c1e9; }"
+    "#info_btn.hover { background: #85c1e9; border-color: #85c1e9; }"
     "#info_btn:active { background: #2e86c1; border-color: #2e86c1; }"
     "#info_label { color: #ffffff; font-size: 11px; font-weight: bold; }"
     "#topbar { background-color: transparent; }"
@@ -413,6 +413,20 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     return FALSE;
 }
 
+static gboolean on_info_enter(GtkWidget *widget, GdkEventCrossing *event, gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+    play_sfx(w->sfx_hover);
+    GtkStyleContext *ctx = gtk_widget_get_style_context(widget);
+    gtk_style_context_add_class(ctx, "hover");
+    return FALSE;
+}
+
+static gboolean on_info_leave(GtkWidget *widget, GdkEventCrossing *event, gpointer data) {
+    GtkStyleContext *ctx = gtk_widget_get_style_context(widget);
+    gtk_style_context_remove_class(ctx, "hover");
+    return FALSE;
+}
+
 static gboolean on_info_clicked(GtkWidget *widget, GdkEventButton *event, gpointer data) {
     AppWidgets *w = (AppWidgets *)data;
     play_sfx(w->sfx_click);
@@ -626,7 +640,9 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_valign(info_box, GTK_ALIGN_CENTER);
     gtk_widget_add_events(info_box, GDK_BUTTON_PRESS_MASK | GDK_ENTER_NOTIFY_MASK);
     g_signal_connect(info_box, "button-press-event", G_CALLBACK(on_info_clicked), w);
-    g_signal_connect(info_box, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
+    g_signal_connect(info_box, "enter-notify-event", G_CALLBACK(on_info_enter), w);
+    g_signal_connect(info_box, "leave-notify-event", G_CALLBACK(on_info_leave), w);
+    gtk_widget_add_events(info_box, GDK_LEAVE_NOTIFY_MASK);
     GtkWidget *info_label = gtk_label_new("i");
     gtk_widget_set_name(info_label, "info_label");
     gtk_widget_set_halign(info_label, GTK_ALIGN_CENTER);
