@@ -259,7 +259,7 @@ static void on_run_clicked(GtkWidget *btn, gpointer data) {
 
     ThreadData *td = malloc(sizeof(ThreadData));
     td->w = w;
-    snprintf(td->cmd, sizeof(td->cmd), "%s '%s' '%s' '%s' 2>&1",
+    snprintf(td->cmd, sizeof(td->cmd), "%s %s %s %s 2>&1",
              w->bin_path, username, password, appid);
 
     GThread *thread = g_thread_new("runner", run_thread, td);
@@ -317,7 +317,7 @@ int main(int argc, char *argv[]) {
 
     w->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(w->window), "SLS-TG");
-    gtk_window_set_default_size(GTK_WINDOW(w->window), 500, 580);
+    gtk_window_set_default_size(GTK_WINDOW(w->window), 750, 420);
     gtk_window_set_resizable(GTK_WINDOW(w->window), FALSE);
     gtk_window_set_decorated(GTK_WINDOW(w->window), FALSE);
     gtk_container_set_border_width(GTK_CONTAINER(w->window), 0);
@@ -356,16 +356,22 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_end(GTK_BOX(topbar), w->close_btn, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox), topbar, FALSE, FALSE, 0);
 
-    /* Content */
-    GtkWidget *content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-    gtk_widget_set_margin_start(content, 24);
-    gtk_widget_set_margin_end(content, 24);
-    gtk_widget_set_margin_top(content, 4);
-    gtk_box_pack_start(GTK_BOX(vbox), content, TRUE, TRUE, 0);
+    /* Two-column landscape layout */
+    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+
+    /* LEFT PANEL: logo, title, fields, button */
+    GtkWidget *left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+    gtk_widget_set_margin_start(left, 24);
+    gtk_widget_set_margin_end(left, 16);
+    gtk_widget_set_margin_top(left, 8);
+    gtk_widget_set_margin_bottom(left, 8);
+    gtk_widget_set_size_request(left, 320, -1);
+    gtk_box_pack_start(GTK_BOX(hbox), left, FALSE, FALSE, 0);
 
     /* Logo */
     GdkPixbuf *pb = g_file_test(w->icon_path, G_FILE_TEST_EXISTS) ?
-        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 90, 90, TRUE, NULL) : NULL;
+        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 70, 70, TRUE, NULL) : NULL;
     w->logo_image = pb ? gtk_image_new_from_pixbuf(pb) : gtk_image_new();
     gtk_widget_set_app_paintable(w->logo_image, TRUE);
     GtkWidget *event_box = gtk_event_box_new();
@@ -377,63 +383,74 @@ int main(int argc, char *argv[]) {
     GtkWidget *logo_center = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_widget_set_halign(logo_center, GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(logo_center), event_box, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(content), logo_center, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), logo_center, FALSE, FALSE, 0);
 
     /* Title */
     GtkWidget *title = gtk_label_new("SLS-TG");
     gtk_widget_set_name(title, "title");
-    gtk_box_pack_start(GTK_BOX(content), title, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), title, FALSE, FALSE, 0);
 
     /* Subtitle */
     GtkWidget *subtitle = gtk_label_new("TICKET GRABBER");
     gtk_widget_set_name(subtitle, "subtitle");
-    gtk_box_pack_start(GTK_BOX(content), subtitle, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), subtitle, FALSE, FALSE, 0);
 
     /* Username */
     GtkWidget *lbl_user = gtk_label_new("USERNAME");
     gtk_widget_set_name(lbl_user, "field_label");
     gtk_widget_set_halign(lbl_user, GTK_ALIGN_START);
-    gtk_box_pack_start(GTK_BOX(content), lbl_user, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), lbl_user, FALSE, FALSE, 0);
     w->entry_username = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_username), "Steam username");
-    gtk_box_pack_start(GTK_BOX(content), w->entry_username, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), w->entry_username, FALSE, FALSE, 0);
 
     /* Password */
     GtkWidget *lbl_pass = gtk_label_new("PASSWORD");
     gtk_widget_set_name(lbl_pass, "field_label");
     gtk_widget_set_halign(lbl_pass, GTK_ALIGN_START);
-    gtk_box_pack_start(GTK_BOX(content), lbl_pass, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), lbl_pass, FALSE, FALSE, 0);
     w->entry_password = gtk_entry_new();
     gtk_entry_set_visibility(GTK_ENTRY(w->entry_password), FALSE);
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_password), "Steam password");
-    gtk_box_pack_start(GTK_BOX(content), w->entry_password, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), w->entry_password, FALSE, FALSE, 0);
 
     /* App ID */
     GtkWidget *lbl_appid = gtk_label_new("APP ID");
     gtk_widget_set_name(lbl_appid, "field_label");
     gtk_widget_set_halign(lbl_appid, GTK_ALIGN_START);
-    gtk_box_pack_start(GTK_BOX(content), lbl_appid, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), lbl_appid, FALSE, FALSE, 0);
     w->entry_appid = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
-    gtk_box_pack_start(GTK_BOX(content), w->entry_appid, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), w->entry_appid, FALSE, FALSE, 0);
 
     /* Run button */
     w->btn = gtk_button_new_with_label("▶   RUN");
     gtk_widget_set_name(w->btn, "run_btn");
-    gtk_widget_set_size_request(w->btn, 220, 46);
+    gtk_widget_set_size_request(w->btn, 200, 44);
     GtkWidget *btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_widget_set_halign(btn_box, GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(btn_box), w->btn, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(content), btn_box, FALSE, FALSE, 6);
+    gtk_box_pack_start(GTK_BOX(left), btn_box, FALSE, FALSE, 6);
     g_signal_connect(w->btn, "clicked", G_CALLBACK(on_run_clicked), w);
     g_signal_connect(w->btn, "clicked", G_CALLBACK(on_btn_click), w);
     g_signal_connect(w->btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
+
+    /* Separator */
+    GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
+    gtk_box_pack_start(GTK_BOX(hbox), sep, FALSE, FALSE, 0);
+
+    /* RIGHT PANEL: log + status */
+    GtkWidget *right = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+    gtk_widget_set_margin_start(right, 16);
+    gtk_widget_set_margin_end(right, 16);
+    gtk_widget_set_margin_top(right, 8);
+    gtk_widget_set_margin_bottom(right, 8);
+    gtk_box_pack_start(GTK_BOX(hbox), right, TRUE, TRUE, 0);
 
     /* Log */
     GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_widget_set_size_request(scroll, -1, 100);
     w->log_buf = gtk_text_buffer_new(NULL);
     w->log_view = gtk_text_view_new_with_buffer(w->log_buf);
     gtk_widget_set_name(w->log_view, "log");
@@ -441,7 +458,7 @@ int main(int argc, char *argv[]) {
     gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(w->log_view), FALSE);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(w->log_view), GTK_WRAP_WORD_CHAR);
     gtk_container_add(GTK_CONTAINER(scroll), w->log_view);
-    gtk_box_pack_start(GTK_BOX(content), scroll, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(right), scroll, TRUE, TRUE, 0);
 
     GtkTextIter end;
     gtk_text_buffer_get_end_iter(w->log_buf, &end);
@@ -452,20 +469,15 @@ int main(int argc, char *argv[]) {
     w->status_label = gtk_label_new("READY");
     gtk_widget_set_name(w->status_label, "status");
     gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
-    gtk_box_pack_start(GTK_BOX(content), w->status_label, FALSE, FALSE, 4);
-
-    /* Filler */
-    GtkWidget *filler = gtk_label_new("");
-    gtk_widget_set_vexpand(filler, TRUE);
-    gtk_box_pack_start(GTK_BOX(vbox), filler, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(right), w->status_label, FALSE, FALSE, 4);
 
     /* Footer */
     GtkWidget *footer_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_widget_set_halign(footer_box, GTK_ALIGN_CENTER);
-    gtk_widget_set_margin_bottom(footer_box, 10);
+    gtk_widget_set_margin_bottom(footer_box, 8);
     w->footer_link = gtk_label_new(
-        "<a href='https://github.com/Deadboy666/h3adcr-b'>"
-        "<span foreground='#aaaaaa' size='medium' underline='none'>h3adcr-b</span></a>"
+        "<a href='https://github.com/AceSLS/SLSsteam'>"
+        "<span foreground='#aaaaaa' size='medium' underline='none'>SLSsteam</span></a>"
         " ❖ "
         "<a href='https://github.com/Ke619/SLS-TG'>"
         "<span foreground='#aaaaaa' size='medium' underline='none'>SLS-TG</span></a>");
