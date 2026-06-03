@@ -42,10 +42,10 @@ typedef struct {
 } AppWidgets;
 
 static const char *CSS =
-    "window { background-color: #cc2200; }"
+    "window { background-image: url('Bg.png'); background-size: cover; }"
     "image { background-color: #000000; }"
     "#logo_box { background-color: transparent; }"
-    "#outer_frame { background-color: #000000; margin: 3px; }"
+    "#outer_frame { background-image: url('Bg.png'); background-size: cover; margin: 3px; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: #0d0000; color: #cc2200; border: 2px solid #cc2200;"
