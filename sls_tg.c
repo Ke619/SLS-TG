@@ -189,7 +189,7 @@ static gboolean append_log(gpointer data) {
 
 static void set_logo(AppWidgets *w, const char *path) {
     if (!g_file_test(path, G_FILE_TEST_EXISTS)) return;
-    GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(path, 160, 160, TRUE, NULL);
+    GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(path, 300, 300, TRUE, NULL);
     if (pb) gtk_image_set_from_pixbuf(GTK_IMAGE(w->logo_image), pb);
 }
 
@@ -475,7 +475,7 @@ int main(int argc, char *argv[]) {
 
     /* Logo image widget */
     GdkPixbuf *pb0 = g_file_test(w->icon_path, G_FILE_TEST_EXISTS) ?
-        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 160, 160, TRUE, NULL) : NULL;
+        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 300, 300, TRUE, NULL) : NULL;
     w->logo_image = pb0 ? gtk_image_new_from_pixbuf(pb0) : gtk_image_new();
     GtkWidget *event_box = gtk_event_box_new();
     gtk_widget_set_name(event_box, "logo_box");
