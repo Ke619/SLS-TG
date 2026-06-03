@@ -259,7 +259,7 @@ static void on_run_clicked(GtkWidget *btn, gpointer data) {
 
     ThreadData *td = malloc(sizeof(ThreadData));
     td->w = w;
-    snprintf(td->cmd, sizeof(td->cmd), "%s %s %s %s 2>&1",
+    snprintf(td->cmd, sizeof(td->cmd), "%s '%s' '%s' '%s' 2>&1",
              w->bin_path, username, password, appid);
 
     GThread *thread = g_thread_new("runner", run_thread, td);
