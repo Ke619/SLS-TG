@@ -28,6 +28,7 @@ typedef struct {
     GstElement *music_player;
     GstElement *sfx_click;
     GstElement *sfx_hover;
+    GstElement *sfx_ticket;
     int music_playing;
     guint hold_timer;
     guint dot_timer;
@@ -43,33 +44,33 @@ typedef struct {
 } AppWidgets;
 
 static const char *CSS =
-    "window { background-color: transparent; }"
+    "window { background-color: #000000; }"
     "image { background-color: transparent; }"
     "#logo_box { background-color: transparent; }"
     "#outer_frame { background-color: transparent; margin: 3px; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
-    "#run_btn { background: #0d0000; color: #cc2200; border: 2px solid #cc2200;"
-    "  font-size: 15px; font-weight: bold; letter-spacing: 3px; padding: 10px 40px; border-radius: 0; }"
-    "#run_btn:hover { background-color: #1a0000; color: #ff3300; }"
-    "#run_btn:active { background-color: #330000; color: #ff3300; }"
-    "#run_btn:disabled { background-color: #0d0d0d; color: #333; border-color: #333; }"
+    "#run_btn { background: transparent; color: #000000; border: 2px solid #000000;"
+    "  font-size: 15px; font-weight: bold; letter-spacing: 3px; padding: 10px 40px; border-radius: 50px; }"
+    "#run_btn:hover { background-color: rgba(0,0,0,0.1); color: #000000; }"
+    "#run_btn:active { background-color: rgba(0,0,0,0.2); color: #000000; }"
+    "#run_btn:disabled { background-color: transparent; color: #888; border-color: #888; }"
     "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200;"
     "  font-size: 18px; font-weight: bold; padding: 2px 8px; min-width: 28px; min-height: 28px; border-radius: 0; }"
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
     "#topbar { background-color: transparent; }"
     "#header { background-color: transparent; }"
-    "#status { color: #cc2200; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
+    "#status { color: #e6cc00; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
     "#status_done { color: #228822; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
     "#status_error { color: #ff3300; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
     "#log { background-color: #000000; color: #aaaaaa; font-family: monospace; font-size: 12px; }"
     "#log text { background-color: #000000; color: #aaaaaa; }"
     "scrolledwindow { }"
     "#field_label { color: #aaaaaa; font-size: 11px; letter-spacing: 2px; }"
-    "entry { background-color: #ffffff; color: #000000; border: 1px solid #cc2200;"
+    "entry { background-color: #ffffff; color: #000000; border: 1px solid #000000;"
     "  border-radius: 0; padding: 6px 10px; font-size: 13px; min-height: 32px; }"
-    "entry:focus { border-color: #ff3300; background-color: #ffffff; color: #000000; }"
+    "entry:focus { border-color: #000000; background-color: #ffffff; color: #000000; }"
     "entry { -gtk-icon-source: none; }"
     "entry.password { font-family: monospace; }"
     "#sep { background-color: #2a0000; min-width: 1px; }"
@@ -220,6 +221,7 @@ static gboolean on_done(gpointer data) {
         gtk_label_set_text(GTK_LABEL(w->status_label), "TICKET GENERATED!");
         gtk_widget_set_name(w->status_label, "status_done");
         set_logo(w, w->logo_success);
+        play_sfx(w->sfx_ticket);
     } else if (!w->error_set) {
         gtk_label_set_text(GTK_LABEL(w->status_label), "CRITICAL ERROR");
         gtk_widget_set_name(w->status_label, "status_error");
@@ -303,9 +305,8 @@ static gpointer run_thread(gpointer data) {
         log_from_thread(w, line);
 
         if (strstr(line, "Connected to Steam")) {
-            update_status(w, "LOGGING IN.", 0, 0);
-        } else if (strstr(line, "Logged in as")) {
             update_status(w, "AWAITING STEAM GUARD AUTHENTICATION", 0, 1);
+        } else if (strstr(line, "Logged in as")) {
         } else if (strstr(line, "Account Info received")) {
             update_status(w, "GENERATING YOUR TICKET.", 0, 0);
 
@@ -433,6 +434,14 @@ int main(int argc, char *argv[]) {
     if (w->sfx_hover) {
         g_object_set(w->sfx_hover, "uri", hover_uri, NULL);
         gst_element_set_state(w->sfx_hover, GST_STATE_PAUSED);
+    }
+
+    char ticket_uri[512];
+    snprintf(ticket_uri, sizeof(ticket_uri), "file://%s/ticket.mp3", saved_dir);
+    w->sfx_ticket = gst_element_factory_make("playbin", "sfx_ticket");
+    if (w->sfx_ticket) {
+        g_object_set(w->sfx_ticket, "uri", ticket_uri, NULL);
+        gst_element_set_state(w->sfx_ticket, GST_STATE_PAUSED);
     }
 
     w->css_provider = gtk_css_provider_new();
@@ -575,7 +584,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), bottom, FALSE, FALSE, 0);
 
     /* Run button centered */
-    w->btn = gtk_button_new_with_label("▶   GENERATE");
+    w->btn = gtk_button_new_with_label("GENERATE");
     gtk_widget_set_name(w->btn, "run_btn");
     gtk_widget_set_size_request(w->btn, 200, 42);
     gtk_widget_set_halign(w->btn, GTK_ALIGN_CENTER);
@@ -623,6 +632,10 @@ int main(int argc, char *argv[]) {
     if (w->sfx_hover) {
         gst_element_set_state(w->sfx_hover, GST_STATE_NULL);
         gst_object_unref(w->sfx_hover);
+    }
+    if (w->sfx_ticket) {
+        gst_element_set_state(w->sfx_ticket, GST_STATE_NULL);
+        gst_object_unref(w->sfx_ticket);
     }
 
     g_free(w);
