@@ -622,11 +622,15 @@ int main(int argc, char *argv[]) {
     GtkWidget *info_box = gtk_event_box_new();
     gtk_widget_set_name(info_box, "info_btn");
     gtk_widget_set_size_request(info_box, 22, 22);
+    gtk_widget_set_halign(info_box, GTK_ALIGN_START);
+    gtk_widget_set_valign(info_box, GTK_ALIGN_CENTER);
     gtk_widget_add_events(info_box, GDK_BUTTON_PRESS_MASK | GDK_ENTER_NOTIFY_MASK);
     g_signal_connect(info_box, "button-press-event", G_CALLBACK(on_info_clicked), w);
     g_signal_connect(info_box, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
     GtkWidget *info_label = gtk_label_new("i");
     gtk_widget_set_name(info_label, "info_label");
+    gtk_widget_set_halign(info_label, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(info_label, GTK_ALIGN_CENTER);
     gtk_container_add(GTK_CONTAINER(info_box), info_label);
     gtk_box_pack_start(GTK_BOX(footer_box), info_box, FALSE, FALSE, 0);
 
