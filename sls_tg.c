@@ -533,11 +533,6 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
 
 
-    /* Status label below logo */
-    gtk_widget_set_name(w->status_label, "status");
-    gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
-    gtk_box_pack_start(GTK_BOX(vbox), w->status_label, FALSE, FALSE, 4);
-
     /* Single column layout */
     GtkWidget *left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_start(left, 24);
@@ -582,6 +577,9 @@ int main(int argc, char *argv[]) {
 
     /* Status below log */
     w->status_label = gtk_label_new("");
+    gtk_widget_set_name(w->status_label, "status");
+    gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
+    gtk_box_pack_start(GTK_BOX(vbox), w->status_label, FALSE, FALSE, 4);
     GtkTextIter end;
     gtk_text_buffer_get_end_iter(w->log_buf, &end);
     gtk_text_buffer_insert(w->log_buf, &end,
