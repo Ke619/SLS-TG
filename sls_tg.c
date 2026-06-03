@@ -61,6 +61,7 @@ static const char *CSS =
     "#info_btn { background: #5dade2; color: #ffffff; border: 2px solid #5dade2; border-radius: 50%; font-size: 11px; font-weight: bold; padding: 0; min-width: 22px; min-height: 22px; -gtk-outline-radius: 50%; }"
     "#info_btn:hover { background: #85c1e9; border-color: #85c1e9; }"
     "#info_btn:active { background: #2e86c1; border-color: #2e86c1; }"
+    "#info_label { color: #ffffff; font-size: 11px; font-weight: bold; }"
     "#topbar { background-color: transparent; }"
     "#header { background-color: transparent; }"
     "#status { color: #e6cc00; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
@@ -412,10 +413,11 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     return FALSE;
 }
 
-static void on_info_clicked(GtkWidget *btn, gpointer data) {
+static gboolean on_info_clicked(GtkWidget *widget, GdkEventButton *event, gpointer data) {
     AppWidgets *w = (AppWidgets *)data;
     play_sfx(w->sfx_click);
     gtk_show_uri_on_window(GTK_WINDOW(w->window), "https://github.com/Ke619/SLS-TG", GDK_CURRENT_TIME, NULL);
+    return FALSE;
 }
 
 int main(int argc, char *argv[]) {
@@ -617,12 +619,16 @@ int main(int argc, char *argv[]) {
 
     /* Close button bottom right */
 
-    GtkWidget *info_btn = gtk_button_new_with_label("ⓘ");
-    gtk_widget_set_name(info_btn, "info_btn");
-    gtk_widget_set_size_request(info_btn, 26, 26);
-    g_signal_connect(info_btn, "clicked", G_CALLBACK(on_info_clicked), w);
-    g_signal_connect(info_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
-    gtk_box_pack_start(GTK_BOX(footer_box), info_btn, FALSE, FALSE, 0);
+    GtkWidget *info_box = gtk_event_box_new();
+    gtk_widget_set_name(info_box, "info_btn");
+    gtk_widget_set_size_request(info_box, 22, 22);
+    gtk_widget_add_events(info_box, GDK_BUTTON_PRESS_MASK | GDK_ENTER_NOTIFY_MASK);
+    g_signal_connect(info_box, "button-press-event", G_CALLBACK(on_info_clicked), w);
+    g_signal_connect(info_box, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
+    GtkWidget *info_label = gtk_label_new("i");
+    gtk_widget_set_name(info_label, "info_label");
+    gtk_container_add(GTK_CONTAINER(info_box), info_label);
+    gtk_box_pack_start(GTK_BOX(footer_box), info_box, FALSE, FALSE, 0);
 
     /* Bottom overlay row: footer + X button pinned to bottom of window */
     GtkWidget *bottom_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
