@@ -35,10 +35,10 @@ typedef struct {
 } AppWidgets;
 
 static const char *CSS =
-    "window { background-color: #cc2200; }"
-    "image { background-color: #000000; }"
+    "window { background: linear-gradient(to bottom, #1b2838, #2a475e); }"
+    "image { background-color: transparent; }"
     "#logo_box { background-color: transparent; }"
-    "#outer_frame { background-color: #000000; margin: 3px; }"
+    "#outer_frame { background: linear-gradient(to bottom, #1b2838, #2a475e); margin: 3px; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: #0d0000; color: #cc2200; border: 2px solid #cc2200;"
@@ -50,8 +50,8 @@ static const char *CSS =
     "  font-size: 18px; font-weight: bold; padding: 0 8px; min-width: 0; min-height: 0; }"
     "#close_btn:hover { color: #ff3300; }"
     "#close_btn:active { color: #880000; }"
-    "#topbar { background-color: #000000; }"
-    "#header { background-color: #000000; }"
+    "#topbar { background-color: transparent; }"
+    "#header { background-color: transparent; }"
     "#status { color: #cc2200; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
     "#status_done { color: #228822; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
     "#status_error { color: #ff3300; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
