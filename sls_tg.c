@@ -38,7 +38,7 @@ static const char *CSS =
     "window { background-color: #cc2200; }"
     "image { background-color: #000000; }"
     "#logo_box { background-color: transparent; }"
-    "#outer_frame { background-color: #000000; margin: 3px; }"
+    "#outer_frame { background-color: #000000; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: #0d0000; color: #cc2200; border: 2px solid #cc2200;"
@@ -57,7 +57,7 @@ static const char *CSS =
     "#status_error { color: #ff3300; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
     "#log { background-color: #000000; color: #aaaaaa; font-family: monospace; font-size: 12px; }"
     "#log text { background-color: #000000; color: #aaaaaa; }"
-    "scrolledwindow { }"
+    "scrolledwindow { border: 1px solid #cc2200; }"
     "#field_label { color: #aaaaaa; font-size: 11px; letter-spacing: 2px; }"
     "entry { background-color: #0d0000; color: #cc2200; border: 1px solid #cc2200;"
     "  border-radius: 0; padding: 6px 10px; font-size: 13px; }"
@@ -397,7 +397,7 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_margin_end(left, 16);
     gtk_widget_set_margin_top(left, 12);
     gtk_widget_set_margin_bottom(left, 12);
-    gtk_widget_set_size_request(left, 320, -1);
+    gtk_widget_set_size_request(left, 355, -1);
     gtk_box_pack_start(GTK_BOX(hbox), left, FALSE, FALSE, 0);
 
     GtkWidget *lbl_user = gtk_label_new("USERNAME");
@@ -420,6 +420,7 @@ int main(int argc, char *argv[]) {
     GtkWidget *lbl_appid = gtk_label_new("APP ID");
     gtk_widget_set_name(lbl_appid, "field_label");
     gtk_widget_set_halign(lbl_appid, GTK_ALIGN_START);
+    gtk_widget_set_margin_top(lbl_appid, 0);
     gtk_box_pack_start(GTK_BOX(left), lbl_appid, FALSE, FALSE, 0);
     w->entry_appid = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
@@ -449,6 +450,12 @@ int main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(scroll), w->log_view);
     gtk_box_pack_start(GTK_BOX(right), scroll, TRUE, TRUE, 0);
 
+    /* Status below log */
+    w->status_label = gtk_label_new("READY");
+    gtk_widget_set_name(w->status_label, "status");
+    gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
+    gtk_box_pack_start(GTK_BOX(right), w->status_label, FALSE, FALSE, 4);
+
     GtkTextIter end;
     gtk_text_buffer_get_end_iter(w->log_buf, &end);
     gtk_text_buffer_insert(w->log_buf, &end,
@@ -458,32 +465,40 @@ int main(int argc, char *argv[]) {
     GtkWidget *hsep2 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_box_pack_start(GTK_BOX(vbox), hsep2, FALSE, FALSE, 0);
 
-    /* Bottom section: Run button + status + footer centered */
-    GtkWidget *bottom = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    /* Bottom section: Run button + footer */
+    GtkWidget *bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_widget_set_margin_top(bottom, 8);
     gtk_widget_set_margin_bottom(bottom, 8);
+    gtk_widget_set_margin_start(bottom, 16);
+    gtk_widget_set_margin_end(bottom, 16);
     gtk_box_pack_start(GTK_BOX(vbox), bottom, FALSE, FALSE, 0);
 
+    /* Footer bottom left */
+    GtkWidget *footer_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_widget_set_halign(footer_box, GTK_ALIGN_START);
+    gtk_widget_set_valign(footer_box, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(bottom), footer_box, TRUE, TRUE, 0);
+
+    /* Run button centered */
     w->btn = gtk_button_new_with_label("▶   RUN");
     gtk_widget_set_name(w->btn, "run_btn");
     gtk_widget_set_size_request(w->btn, 200, 42);
     GtkWidget *btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_widget_set_halign(btn_box, GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(btn_box), w->btn, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(bottom), btn_box, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(bottom), btn_box, TRUE, TRUE, 0);
     g_signal_connect(w->btn, "clicked", G_CALLBACK(on_run_clicked), w);
     g_signal_connect(w->btn, "clicked", G_CALLBACK(on_btn_click), w);
     g_signal_connect(w->btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
 
-    w->status_label = gtk_label_new("READY");
-    gtk_widget_set_name(w->status_label, "status");
-    gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
-    gtk_box_pack_start(GTK_BOX(bottom), w->status_label, FALSE, FALSE, 0);
+    /* Spacer right to balance */
+    GtkWidget *spacer_bottom = gtk_label_new("");
+    gtk_widget_set_hexpand(spacer_bottom, TRUE);
+    gtk_box_pack_start(GTK_BOX(bottom), spacer_bottom, TRUE, TRUE, 0);
 
-    /* Footer */
-    GtkWidget *footer_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_set_halign(footer_box, GTK_ALIGN_CENTER);
-    gtk_widget_set_margin_bottom(footer_box, 4);
+    GtkWidget *footer_box_dummy = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_widget_set_name(footer_box_dummy, "footer");
+    (void)footer_box_dummy;
     w->footer_link = gtk_label_new(
         "<a href='https://github.com/AceSLS/SLSsteam'>"
         "<span foreground='#aaaaaa' size='medium' underline='none'>SLSsteam</span></a>"
