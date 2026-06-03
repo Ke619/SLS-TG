@@ -58,7 +58,7 @@ static const char *CSS =
     "  font-size: 11px; font-weight: bold; padding: 0; min-width: 20px; min-height: 20px; }"
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
-    "#info_btn { background: #5dade2; color: #ffffff; border: 2px solid #5dade2; border-radius: 50%; font-size: 11px; font-weight: bold; padding: 0; min-width: 20px; min-height: 20px; }"
+    "#info_btn { background: #5dade2; color: #ffffff; border: 2px solid #5dade2; border-radius: 50%; font-size: 11px; font-weight: bold; padding: 0; min-width: 22px; min-height: 22px; -gtk-icon-style: regular; }"
     "#info_btn:hover { background: #85c1e9; border-color: #85c1e9; }"
     "#info_btn:active { background: #2e86c1; border-color: #2e86c1; }"
     "#topbar { background-color: transparent; }"
@@ -412,6 +412,12 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     return FALSE;
 }
 
+static void on_info_clicked(GtkWidget *btn, gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+    play_sfx(w->sfx_click);
+    gtk_show_uri_on_window(GTK_WINDOW(w->window), "https://github.com/Ke619/SLS-TG", GDK_CURRENT_TIME, NULL);
+}
+
 int main(int argc, char *argv[]) {
     gst_init(&argc, &argv);
     gtk_init(&argc, &argv);
@@ -613,7 +619,8 @@ int main(int argc, char *argv[]) {
 
     GtkWidget *info_btn = gtk_button_new_with_label("i");
     gtk_widget_set_name(info_btn, "info_btn");
-    g_signal_connect_swapped(info_btn, "clicked", G_CALLBACK(g_app_info_launch_default_for_uri), "https://github.com/Ke619/SLS-TG");
+    g_signal_connect(info_btn, "clicked", G_CALLBACK(on_info_clicked), w);
+    g_signal_connect(info_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
     gtk_box_pack_start(GTK_BOX(footer_box), info_btn, FALSE, FALSE, 0);
 
     /* Bottom overlay row: footer + X button pinned to bottom of window */
