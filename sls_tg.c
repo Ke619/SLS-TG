@@ -53,10 +53,10 @@ static const char *CSS =
     "#run_btn:hover { background-color: #1a0000; color: #ff3300; }"
     "#run_btn:active { background-color: #330000; color: #ff3300; }"
     "#run_btn:disabled { background-color: #0d0d0d; color: #333; border-color: #333; }"
-    "#close_btn { background: transparent; color: #cc2200; border: none;"
-    "  font-size: 18px; font-weight: bold; padding: 0 8px; min-width: 0; min-height: 0; }"
-    "#close_btn:hover { color: #ff3300; }"
-    "#close_btn:active { color: #880000; }"
+    "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200;"
+    "  font-size: 18px; font-weight: bold; padding: 2px 8px; min-width: 28px; min-height: 28px; border-radius: 0; }"
+    "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
+    "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
     "#topbar { background-color: transparent; }"
     "#header { background-color: transparent; }"
     "#status { color: #cc2200; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
@@ -66,14 +66,17 @@ static const char *CSS =
     "#log text { background-color: #000000; color: #aaaaaa; }"
     "scrolledwindow { }"
     "#field_label { color: #aaaaaa; font-size: 11px; letter-spacing: 2px; }"
-    "entry { background-color: #0d0000; color: #cc2200; border: 1px solid #cc2200;"
+    "entry { background-color: #ffffff; color: #000000; border: 1px solid #cc2200;"
     "  border-radius: 0; padding: 6px 10px; font-size: 13px; min-height: 32px; }"
-    "entry:focus { border-color: #ff3300; }"
+    "entry:focus { border-color: #ff3300; background-color: #ffffff; color: #000000; }"
     "entry { -gtk-icon-source: none; }"
     "entry.password { font-family: monospace; }"
     "#sep { background-color: #2a0000; min-width: 1px; }"
     "#footer { color: #aaaaaa; font-size: 10px; }"
-    "#dim_layer { background-color: rgba(0,0,0,0.75); }";
+    "#dim_layer { background-color: rgba(0,0,0,0.75); }"
+    "#logs_btn { background: transparent; color: #000000; border: none; padding: 0; font-size: 11px; box-shadow: none; }"
+    "#logs_btn:hover { color: #cc2200; background: transparent; border: none; }"
+    "#logs_btn:active { background: transparent; border: none; }";
 
 static void save_music(int playing) {
     const char *home = g_get_home_dir();
@@ -380,6 +383,32 @@ static gboolean on_topbar_drag(GtkWidget *widget, GdkEventButton *event, gpointe
     return FALSE;
 }
 
+static void open_logs(GtkWidget *btn, gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+
+    GtkWidget *log_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(log_win), "Logs");
+    gtk_window_set_default_size(GTK_WINDOW(log_win), 600, 400);
+    gtk_window_set_transient_for(GTK_WINDOW(log_win), GTK_WINDOW(w->window));
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_container_add(GTK_CONTAINER(log_win), vbox);
+
+    GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
+        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(vbox), scroll, TRUE, TRUE, 0);
+
+    GtkWidget *log_view = gtk_text_view_new_with_buffer(w->log_buf);
+    gtk_widget_set_name(log_view, "log");
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(log_view), FALSE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(log_view), FALSE);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(log_view), GTK_WRAP_WORD_CHAR);
+    gtk_container_add(GTK_CONTAINER(scroll), log_view);
+
+    gtk_widget_show_all(log_win);
+}
+
 int main(int argc, char *argv[]) {
     gst_init(&argc, &argv);
     gtk_init(&argc, &argv);
@@ -590,6 +619,14 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_name(w->footer_link, "footer");
     gtk_box_pack_start(GTK_BOX(footer_box), w->footer_link, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(bottom), footer_box, FALSE, FALSE, 0);
+
+    /* Logs button - plain text at very bottom */
+    GtkWidget *logs_btn = gtk_button_new_with_label("Logs");
+    gtk_widget_set_name(logs_btn, "logs_btn");
+    gtk_widget_set_halign(logs_btn, GTK_ALIGN_CENTER);
+    gtk_widget_set_margin_bottom(logs_btn, 4);
+    gtk_box_pack_end(GTK_BOX(vbox), logs_btn, FALSE, FALSE, 0);
+    g_signal_connect(logs_btn, "clicked", G_CALLBACK(open_logs), w);
 
     gtk_widget_show_all(w->window);
 
