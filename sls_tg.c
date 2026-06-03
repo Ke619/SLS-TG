@@ -400,8 +400,7 @@ int main(int argc, char *argv[]) {
     GtkWidget *lbl_user = gtk_label_new("USERNAME");
     gtk_widget_set_name(lbl_user, "field_label");
     gtk_widget_set_halign(lbl_user, GTK_ALIGN_START);
-    gtk_widget_set_margin_top(lbl_user, 8);
-    gtk_box_pack_start(GTK_BOX(left), lbl_user, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), lbl_user, FALSE, FALSE, 6);
     w->entry_username = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_username), "Steam username");
     gtk_box_pack_start(GTK_BOX(left), w->entry_username, FALSE, FALSE, 0);
@@ -409,8 +408,7 @@ int main(int argc, char *argv[]) {
     GtkWidget *lbl_pass = gtk_label_new("PASSWORD");
     gtk_widget_set_name(lbl_pass, "field_label");
     gtk_widget_set_halign(lbl_pass, GTK_ALIGN_START);
-    gtk_widget_set_margin_top(lbl_pass, 8);
-    gtk_box_pack_start(GTK_BOX(left), lbl_pass, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), lbl_pass, FALSE, FALSE, 6);
     w->entry_password = gtk_entry_new();
     gtk_entry_set_visibility(GTK_ENTRY(w->entry_password), FALSE);
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_password), "Steam password");
@@ -419,8 +417,7 @@ int main(int argc, char *argv[]) {
     GtkWidget *lbl_appid = gtk_label_new("APP ID");
     gtk_widget_set_name(lbl_appid, "field_label");
     gtk_widget_set_halign(lbl_appid, GTK_ALIGN_START);
-    gtk_widget_set_margin_top(lbl_appid, 8);
-    gtk_box_pack_start(GTK_BOX(left), lbl_appid, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(left), lbl_appid, FALSE, FALSE, 6);
     w->entry_appid = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
     gtk_box_pack_start(GTK_BOX(left), w->entry_appid, FALSE, FALSE, 0);
