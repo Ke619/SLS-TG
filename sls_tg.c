@@ -58,7 +58,7 @@ static const char *CSS =
     "  font-size: 11px; font-weight: bold; padding: 0; min-width: 20px; min-height: 20px; }"
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
-    "#info_btn { background: #5dade2; color: #ffffff; border: 2px solid #5dade2; border-radius: 50%; font-size: 11px; font-weight: bold; padding: 0; min-width: 22px; min-height: 22px; -gtk-icon-style: regular; }"
+    "#info_btn { background: #5dade2; color: #ffffff; border: 2px solid #5dade2; border-radius: 50%; font-size: 11px; font-weight: bold; padding: 0; min-width: 22px; min-height: 22px; -gtk-outline-radius: 50%; }"
     "#info_btn:hover { background: #85c1e9; border-color: #85c1e9; }"
     "#info_btn:active { background: #2e86c1; border-color: #2e86c1; }"
     "#topbar { background-color: transparent; }"
@@ -619,7 +619,7 @@ int main(int argc, char *argv[]) {
 
     GtkWidget *info_btn = gtk_button_new_with_label("i");
     gtk_widget_set_name(info_btn, "info_btn");
-    gtk_widget_set_size_request(info_btn, 22, 22);
+    gtk_widget_set_size_request(info_btn, 26, 26);
     g_signal_connect(info_btn, "clicked", G_CALLBACK(on_info_clicked), w);
     g_signal_connect(info_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
     gtk_box_pack_start(GTK_BOX(footer_box), info_btn, FALSE, FALSE, 0);
