@@ -30,6 +30,8 @@ typedef struct {
     GstElement *sfx_hover;
     int music_playing;
     guint hold_timer;
+    guint dot_timer;
+    int dot_count;
     char bin_path[512];
     char icon_path[512];
 } AppWidgets;
@@ -185,11 +187,12 @@ static gboolean on_done(gpointer data) {
     AppWidgets *w = (AppWidgets *)args[0];
     int code = atoi(args[1]);
     gtk_widget_set_sensitive(w->btn, TRUE);
+    if (w->dot_timer) { g_source_remove(w->dot_timer); w->dot_timer = 0; }
     if (code == 0) {
-        gtk_label_set_text(GTK_LABEL(w->status_label), "✓ DONE");
+        gtk_label_set_text(GTK_LABEL(w->status_label), "TICKET GENERATED!");
         gtk_widget_set_name(w->status_label, "status_done");
     } else {
-        gtk_label_set_text(GTK_LABEL(w->status_label), "✗ ERROR");
+        gtk_label_set_text(GTK_LABEL(w->status_label), "CRITICAL ERROR");
         gtk_widget_set_name(w->status_label, "status_error");
     }
     free(args[1]);
@@ -218,6 +221,30 @@ typedef struct {
     char cmd[2048];
 } ThreadData;
 
+typedef struct { AppWidgets *w; char status[256]; int is_error; int stop_anim; } StatusUpdate;
+
+static gboolean apply_status(gpointer data) {
+    StatusUpdate *su = (StatusUpdate *)data;
+    AppWidgets *w = su->w;
+    if (su->stop_anim && w->dot_timer) {
+        g_source_remove(w->dot_timer);
+        w->dot_timer = 0;
+    }
+    gtk_label_set_text(GTK_LABEL(w->status_label), su->status);
+    gtk_widget_set_name(w->status_label, su->is_error ? "status_error" : "status");
+    free(su);
+    return G_SOURCE_REMOVE;
+}
+
+static void update_status(AppWidgets *w, const char *status, int is_error, int stop_anim) {
+    StatusUpdate *su = malloc(sizeof(StatusUpdate));
+    su->w = w;
+    strncpy(su->status, status, sizeof(su->status)-1);
+    su->is_error = is_error;
+    su->stop_anim = stop_anim;
+    g_idle_add(apply_status, su);
+}
+
 static gpointer run_thread(gpointer data) {
     ThreadData *td = (ThreadData *)data;
     AppWidgets *w = td->w;
@@ -226,6 +253,7 @@ static gpointer run_thread(gpointer data) {
     free(td);
     if (!fp) {
         log_from_thread(w, "[ ERROR: failed to launch ]");
+        update_status(w, "INTERNAL ERROR", 1, 1);
         done_from_thread(w, 1);
         return NULL;
     }
@@ -234,10 +262,50 @@ static gpointer run_thread(gpointer data) {
         size_t len = strlen(line);
         if (len > 0 && line[len-1] == '\n') line[len-1] = '\0';
         log_from_thread(w, line);
+
+        if (strstr(line, "Connected to Steam")) {
+            update_status(w, "LOGGING IN.", 0, 0);
+        } else if (strstr(line, "Logging in")) {
+            update_status(w, "AWAITING STEAM GUARD AUTHENTICATION", 0, 1);
+        } else if (strstr(line, "Logged in")) {
+            update_status(w, "GENERATING YOUR TICKET.", 0, 0);
+
+        } else if (strstr(line, "Saved")) {
+            update_status(w, "TICKET GENERATED!", 0, 1);
+        } else if (strstr(line, "is not a number")) {
+            update_status(w, "INVALID APP ID", 1, 1);
+        } else if (strstr(line, "Failed to get Handlers")) {
+            update_status(w, "INTERNAL ERROR", 1, 1);
+        } else if (strstr(line, "Failed GetAppOwnershipTicket")) {
+            update_status(w, "OWNERSHIP VERIFICATION FAILED", 1, 1);
+        } else if (strstr(line, "Failed RequestEncryptedAppTicket")) {
+            update_status(w, "TICKET ENCRYPTION FAILED", 1, 1);
+        } else if (strstr(line, "Failed to receive both tickets")) {
+            update_status(w, "STEAM CONNECTION ERROR", 1, 1);
+        } else if (strstr(line, "Disconnected from Steam")) {
+            update_status(w, "DISCONNECTED FROM STEAM", 1, 1);
+        }
     }
     int ret = pclose(fp);
     done_from_thread(w, WEXITSTATUS(ret));
     return NULL;
+}
+
+static gboolean on_dot_tick(gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+    w->dot_count = (w->dot_count % 3) + 1;
+    /* Get current label to keep the prefix and just update dots */
+    const char *current = gtk_label_get_text(GTK_LABEL(w->status_label));
+    char prefix[64];
+    strncpy(prefix, current, sizeof(prefix));
+    /* Strip trailing dots */
+    int len = strlen(prefix);
+    while (len > 0 && prefix[len-1] == '.') { prefix[--len] = 0; }
+    char label[128];
+    snprintf(label, sizeof(label), "%s%.*s", prefix, w->dot_count, "...");
+    gtk_label_set_text(GTK_LABEL(w->status_label), label);
+    gtk_widget_set_name(w->status_label, "status");
+    return G_SOURCE_CONTINUE;
 }
 
 static void on_run_clicked(GtkWidget *btn, gpointer data) {
@@ -246,12 +314,15 @@ static void on_run_clicked(GtkWidget *btn, gpointer data) {
     const char *password = gtk_entry_get_text(GTK_ENTRY(w->entry_password));
     const char *appid    = gtk_entry_get_text(GTK_ENTRY(w->entry_appid));
     if (strlen(username) == 0 || strlen(password) == 0 || strlen(appid) == 0) {
-        gtk_label_set_text(GTK_LABEL(w->status_label), "⚠ FILL ALL FIELDS");
+        gtk_label_set_text(GTK_LABEL(w->status_label), "REQUIRED DETAILS MISSING");
         gtk_widget_set_name(w->status_label, "status_error");
         return;
     }
     gtk_widget_set_sensitive(w->btn, FALSE);
-    gtk_label_set_text(GTK_LABEL(w->status_label), "RUNNING...");
+    w->dot_count = 0;
+    /* Start with CONNECTING animation */
+    gtk_label_set_text(GTK_LABEL(w->status_label), "CONNECTING.");
+    w->dot_timer = g_timeout_add(500, on_dot_tick, w);
     gtk_widget_set_name(w->status_label, "status");
     gtk_text_buffer_set_text(w->log_buf, "", -1);
     ThreadData *td = malloc(sizeof(ThreadData));
@@ -409,7 +480,7 @@ int main(int argc, char *argv[]) {
     w->log_view = gtk_text_view_new_with_buffer(w->log_buf);
 
     /* Status below log */
-    w->status_label = gtk_label_new("READY");
+    w->status_label = gtk_label_new("");
     GtkTextIter end;
     gtk_text_buffer_get_end_iter(w->log_buf, &end);
     gtk_text_buffer_insert(w->log_buf, &end,
@@ -423,7 +494,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), bottom, FALSE, FALSE, 0);
 
     /* Run button centered */
-    w->btn = gtk_button_new_with_label("▶   RUN");
+    w->btn = gtk_button_new_with_label("▶   GENERATE");
     gtk_widget_set_name(w->btn, "run_btn");
     gtk_widget_set_size_request(w->btn, 200, 42);
     gtk_widget_set_halign(w->btn, GTK_ALIGN_CENTER);
