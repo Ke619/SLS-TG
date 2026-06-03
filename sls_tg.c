@@ -25,8 +25,7 @@ typedef struct {
     GtkWidget *overlay;
     GtkWidget *dim_layer;
     GtkWidget *footer_link;
-    GtkWidget *header;
-    GtkWidget *log_scroll;
+    GtkWidget *stack;
     int logs_visible;
     GstElement *music_player;
     GstElement *sfx_click;
@@ -405,12 +404,10 @@ static void on_toggle_logs(GtkWidget *btn, gpointer data) {
     AppWidgets *w = (AppWidgets *)data;
     w->logs_visible = !w->logs_visible;
     if (w->logs_visible) {
-        gtk_widget_hide(w->header);
-        gtk_widget_show_all(w->log_scroll);
+        gtk_stack_set_visible_child_name(GTK_STACK(w->stack), "logs");
         gtk_button_set_label(GTK_BUTTON(btn), "Back");
     } else {
-        gtk_widget_show(w->header);
-        gtk_widget_hide(w->log_scroll);
+        gtk_stack_set_visible_child_name(GTK_STACK(w->stack), "header");
         gtk_button_set_label(GTK_BUTTON(btn), "Logs");
     }
 }
@@ -505,8 +502,12 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), topbar, FALSE, FALSE, 0);
 
     /* Header - centered logo, title, subtitle */
-    w->header = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-    GtkWidget *header = w->header;
+    /* Stack for header/logs toggle */
+    w->stack = gtk_stack_new();
+    gtk_stack_set_transition_type(GTK_STACK(w->stack), GTK_STACK_TRANSITION_TYPE_NONE);
+    gtk_box_pack_start(GTK_BOX(vbox), w->stack, FALSE, FALSE, 0);
+
+    GtkWidget *header = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
     gtk_widget_set_name(header, "header");
     gtk_widget_set_margin_top(header, 6);
     gtk_widget_set_margin_bottom(header, 8);
@@ -526,24 +527,10 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(logo_center), event_box, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(header), logo_center, FALSE, FALSE, 0);
 
-    gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), w->log_scroll, FALSE, FALSE, 0);
+    gtk_stack_add_named(GTK_STACK(w->stack), header, "header");
 
 
-    /* Log scroll - hidden by default, shown when Logs is clicked */
-    w->log_scroll = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(w->log_scroll),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_widget_set_size_request(w->log_scroll, -1, 300);
-    GtkWidget *log_view2 = gtk_text_view_new_with_buffer(w->log_buf);
-    gtk_widget_set_name(log_view2, "log");
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(log_view2), FALSE);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(log_view2), FALSE);
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(log_view2), GTK_WRAP_WORD_CHAR);
-    gtk_container_add(GTK_CONTAINER(w->log_scroll), log_view2);
-    gtk_widget_show(log_view2);
-    gtk_widget_set_no_show_all(w->log_scroll, TRUE);
-    /* log_scroll positioned after header in toggle */
+    /* log_scroll removed - using GtkStack now */
     GtkWidget *left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_start(left, 24);
     gtk_widget_set_margin_end(left, 24);
