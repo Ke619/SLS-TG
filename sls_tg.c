@@ -437,6 +437,7 @@ int main(int argc, char *argv[]) {
     w->entry_appid = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
     gtk_widget_set_size_request(w->entry_appid, -1, 36);
+    gtk_widget_set_margin_top(w->entry_appid, -6);
     gtk_box_pack_start(GTK_BOX(grp_appid), w->entry_appid, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(left), grp_appid, FALSE, FALSE, 4);
 
