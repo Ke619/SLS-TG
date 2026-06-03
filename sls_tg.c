@@ -25,6 +25,9 @@ typedef struct {
     GtkWidget *overlay;
     GtkWidget *dim_layer;
     GtkWidget *footer_link;
+    GtkWidget *header;
+    GtkWidget *log_scroll;
+    int logs_visible;
     GstElement *music_player;
     GstElement *sfx_click;
     GstElement *sfx_hover;
@@ -35,6 +38,7 @@ typedef struct {
     int error_set;
     char bin_path[512];
     char icon_path[512];
+    GdkPixbuf *bg_pixbuf;
     char logo_idle[512];
     char logo_processing[512];
     char logo_success[512];
@@ -383,30 +387,32 @@ static gboolean on_topbar_drag(GtkWidget *widget, GdkEventButton *event, gpointe
     return FALSE;
 }
 
-static void open_logs(GtkWidget *btn, gpointer data) {
+static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     AppWidgets *w = (AppWidgets *)data;
+    if (!w->bg_pixbuf) return FALSE;
+    int win_w = gtk_widget_get_allocated_width(widget);
+    int win_h = gtk_widget_get_allocated_height(widget);
+    GdkPixbuf *scaled = gdk_pixbuf_scale_simple(w->bg_pixbuf, win_w, win_h, GDK_INTERP_BILINEAR);
+    if (scaled) {
+        gdk_cairo_set_source_pixbuf(cr, scaled, 0, 0);
+        cairo_paint(cr);
+        g_object_unref(scaled);
+    }
+    return FALSE;
+}
 
-    GtkWidget *log_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(log_win), "Logs");
-    gtk_window_set_default_size(GTK_WINDOW(log_win), 600, 400);
-    gtk_window_set_transient_for(GTK_WINDOW(log_win), GTK_WINDOW(w->window));
-
-    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_container_add(GTK_CONTAINER(log_win), vbox);
-
-    GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_box_pack_start(GTK_BOX(vbox), scroll, TRUE, TRUE, 0);
-
-    GtkWidget *log_view = gtk_text_view_new_with_buffer(w->log_buf);
-    gtk_widget_set_name(log_view, "log");
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(log_view), FALSE);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(log_view), FALSE);
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(log_view), GTK_WRAP_WORD_CHAR);
-    gtk_container_add(GTK_CONTAINER(scroll), log_view);
-
-    gtk_widget_show_all(log_win);
+static void on_toggle_logs(GtkWidget *btn, gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+    w->logs_visible = !w->logs_visible;
+    if (w->logs_visible) {
+        gtk_widget_hide(w->header);
+        gtk_widget_show(w->log_scroll);
+        gtk_button_set_label(GTK_BUTTON(btn), "Back");
+    } else {
+        gtk_widget_show(w->header);
+        gtk_widget_hide(w->log_scroll);
+        gtk_button_set_label(GTK_BUTTON(btn), "Logs");
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -416,6 +422,7 @@ int main(int argc, char *argv[]) {
     AppWidgets *w = g_new0(AppWidgets, 1);
     w->music_playing = 0;
     w->hold_timer = 0;
+    w->logs_visible = 0;
 
     char *dir = g_path_get_dirname(argv[0]);
     char saved_dir[512];
@@ -454,19 +461,7 @@ int main(int argc, char *argv[]) {
         GTK_STYLE_PROVIDER(w->css_provider),
         GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
     );
-    {
-        char bg_path[512];
-        char bg_css[2048];
-        snprintf(bg_path, sizeof(bg_path), "%s/Bg.png", saved_dir);
-        if (g_file_test(bg_path, G_FILE_TEST_EXISTS)) {
-            snprintf(bg_css, sizeof(bg_css),
-                "%s #outer_frame { background-image: url('file://%s/Bg.png'); background-size: cover; margin: 3px; }",
-                CSS, saved_dir);
-            gtk_css_provider_load_from_data(w->css_provider, bg_css, -1, NULL);
-        } else {
-            gtk_css_provider_load_from_data(w->css_provider, CSS, -1, NULL);
-        }
-    }
+    gtk_css_provider_load_from_data(w->css_provider, CSS, -1, NULL);
 
     w->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(w->window), "SLS-TG");
@@ -510,7 +505,8 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), topbar, FALSE, FALSE, 0);
 
     /* Header - centered logo, title, subtitle */
-    GtkWidget *header = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    w->header = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *header = w->header;
     gtk_widget_set_name(header, "header");
     gtk_widget_set_margin_top(header, 6);
     gtk_widget_set_margin_bottom(header, 8);
@@ -532,6 +528,20 @@ int main(int argc, char *argv[]) {
 
     gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
 
+
+    /* Log scroll - hidden by default, shown when Logs is clicked */
+    w->log_scroll = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(w->log_scroll),
+        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_widget_set_size_request(w->log_scroll, -1, 300);
+    GtkWidget *log_view2 = gtk_text_view_new_with_buffer(w->log_buf);
+    gtk_widget_set_name(log_view2, "log");
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(log_view2), FALSE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(log_view2), FALSE);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(log_view2), GTK_WRAP_WORD_CHAR);
+    gtk_container_add(GTK_CONTAINER(w->log_scroll), log_view2);
+    gtk_widget_set_no_show_all(w->log_scroll, TRUE);
+    gtk_box_pack_start(GTK_BOX(vbox), w->log_scroll, FALSE, FALSE, 0);
 
     /* Single column layout */
     GtkWidget *left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -620,13 +630,25 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(footer_box), w->footer_link, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(bottom), footer_box, FALSE, FALSE, 0);
 
+    /* Load background image */
+    char bg_path2[512];
+    snprintf(bg_path2, sizeof(bg_path2), "%s/Bg.png", saved_dir);
+    w->bg_pixbuf = g_file_test(bg_path2, G_FILE_TEST_EXISTS) ?
+        gdk_pixbuf_new_from_file(bg_path2, NULL) : NULL;
+
+    /* Connect draw signal for background */
+    gtk_widget_set_app_paintable(w->window, TRUE);
+    g_signal_connect(w->window, "draw", G_CALLBACK(on_draw), w);
+    gtk_widget_set_app_paintable(w->outer_frame, TRUE);
+    g_signal_connect(w->outer_frame, "draw", G_CALLBACK(on_draw), w);
+
     /* Logs button - plain text at very bottom */
     GtkWidget *logs_btn = gtk_button_new_with_label("Logs");
     gtk_widget_set_name(logs_btn, "logs_btn");
     gtk_widget_set_halign(logs_btn, GTK_ALIGN_CENTER);
     gtk_widget_set_margin_bottom(logs_btn, 4);
     gtk_box_pack_end(GTK_BOX(vbox), logs_btn, FALSE, FALSE, 0);
-    g_signal_connect(logs_btn, "clicked", G_CALLBACK(open_logs), w);
+    g_signal_connect(logs_btn, "clicked", G_CALLBACK(on_toggle_logs), w);
 
     gtk_widget_show_all(w->window);
 
