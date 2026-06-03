@@ -406,7 +406,7 @@ static void on_toggle_logs(GtkWidget *btn, gpointer data) {
     w->logs_visible = !w->logs_visible;
     if (w->logs_visible) {
         gtk_widget_hide(w->header);
-        gtk_widget_show(w->log_scroll);
+        gtk_widget_show_all(w->log_scroll);
         gtk_button_set_label(GTK_BUTTON(btn), "Back");
     } else {
         gtk_widget_show(w->header);
