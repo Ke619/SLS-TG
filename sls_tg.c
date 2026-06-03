@@ -17,6 +17,9 @@ typedef struct {
     GtkWidget *log_view;
     GtkTextBuffer *log_buf;
     GtkWidget *status_label;
+    GtkWidget *entry_username;
+    GtkWidget *entry_password;
+    GtkWidget *entry_appid;
     GtkCssProvider *css_provider;
     GtkWidget *outer_frame;
     GtkWidget *overlay;
@@ -48,12 +51,16 @@ static const char *CSS =
     "#close_btn:hover { color: #ff3300; }"
     "#close_btn:active { color: #880000; }"
     "#topbar { background-color: #000000; }"
-    "#status { color: #cc2200; font-size: 16px; font-weight: bold; letter-spacing: 2px; }"
-    "#status_done { color: #228822; font-size: 16px; font-weight: bold; letter-spacing: 2px; }"
-    "#status_error { color: #ff3300; font-size: 16px; font-weight: bold; letter-spacing: 2px; }"
+    "#status { color: #cc2200; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
+    "#status_done { color: #228822; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
+    "#status_error { color: #ff3300; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
     "#log { background-color: #000000; color: #aaaaaa; font-family: monospace; font-size: 12px; }"
     "#log text { background-color: #000000; color: #aaaaaa; }"
     "scrolledwindow { }"
+    "#field_label { color: #aaaaaa; font-size: 11px; letter-spacing: 2px; }"
+    "entry { background-color: #0d0000; color: #cc2200; border: 1px solid #cc2200;"
+    "  border-radius: 0; padding: 6px 10px; font-size: 13px; }"
+    "entry:focus { border-color: #ff3300; }"
     "#footer { color: #aaaaaa; font-size: 10px; }"
     "#dim_layer { background-color: rgba(0,0,0,0.75); }";
 
@@ -202,11 +209,20 @@ static void done_from_thread(AppWidgets *w, int code) {
     g_idle_add(on_done, args);
 }
 
-static gpointer run_thread(gpointer data) {
-    AppWidgets *w = (AppWidgets *)data;
-    log_from_thread(w, "[ LAUNCHING SLS-TG... ]");
+typedef struct {
+    AppWidgets *w;
+    char cmd[2048];
+} ThreadData;
 
-    FILE *fp = popen(w->bin_path, "r");
+static gpointer run_thread(gpointer data) {
+    ThreadData *td = (ThreadData *)data;
+    AppWidgets *w = td->w;
+
+    log_from_thread(w, "[ LAUNCHING TICKET-GRABBER... ]");
+
+    FILE *fp = popen(td->cmd, "r");
+    free(td);
+
     if (!fp) {
         log_from_thread(w, "[ ERROR: failed to launch ]");
         done_from_thread(w, 1);
@@ -225,11 +241,28 @@ static gpointer run_thread(gpointer data) {
 
 static void on_run_clicked(GtkWidget *btn, gpointer data) {
     AppWidgets *w = (AppWidgets *)data;
+
+    const char *username = gtk_entry_get_text(GTK_ENTRY(w->entry_username));
+    const char *password = gtk_entry_get_text(GTK_ENTRY(w->entry_password));
+    const char *appid    = gtk_entry_get_text(GTK_ENTRY(w->entry_appid));
+
+    if (strlen(username) == 0 || strlen(password) == 0 || strlen(appid) == 0) {
+        gtk_label_set_text(GTK_LABEL(w->status_label), "⚠ FILL ALL FIELDS");
+        gtk_widget_set_name(w->status_label, "status_error");
+        return;
+    }
+
     gtk_widget_set_sensitive(w->btn, FALSE);
     gtk_label_set_text(GTK_LABEL(w->status_label), "RUNNING...");
     gtk_widget_set_name(w->status_label, "status");
     gtk_text_buffer_set_text(w->log_buf, "", -1);
-    GThread *thread = g_thread_new("runner", run_thread, w);
+
+    ThreadData *td = malloc(sizeof(ThreadData));
+    td->w = w;
+    snprintf(td->cmd, sizeof(td->cmd), "%s %s %s %s 2>&1",
+             w->bin_path, username, password, appid);
+
+    GThread *thread = g_thread_new("runner", run_thread, td);
     g_thread_unref(thread);
 }
 
@@ -284,7 +317,7 @@ int main(int argc, char *argv[]) {
 
     w->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(w->window), "SLS-TG");
-    gtk_window_set_default_size(GTK_WINDOW(w->window), 500, 500);
+    gtk_window_set_default_size(GTK_WINDOW(w->window), 500, 580);
     gtk_window_set_resizable(GTK_WINDOW(w->window), FALSE);
     gtk_window_set_decorated(GTK_WINDOW(w->window), FALSE);
     gtk_container_set_border_width(GTK_CONTAINER(w->window), 0);
@@ -332,7 +365,7 @@ int main(int argc, char *argv[]) {
 
     /* Logo */
     GdkPixbuf *pb = g_file_test(w->icon_path, G_FILE_TEST_EXISTS) ?
-        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 110, 110, TRUE, NULL) : NULL;
+        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 90, 90, TRUE, NULL) : NULL;
     w->logo_image = pb ? gtk_image_new_from_pixbuf(pb) : gtk_image_new();
     gtk_widget_set_app_paintable(w->logo_image, TRUE);
     GtkWidget *event_box = gtk_event_box_new();
@@ -352,14 +385,42 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(content), title, FALSE, FALSE, 0);
 
     /* Subtitle */
-    GtkWidget *subtitle = gtk_label_new("The Headcrab Approaches..");
+    GtkWidget *subtitle = gtk_label_new("TICKET GRABBER");
     gtk_widget_set_name(subtitle, "subtitle");
     gtk_box_pack_start(GTK_BOX(content), subtitle, FALSE, FALSE, 0);
+
+    /* Username */
+    GtkWidget *lbl_user = gtk_label_new("USERNAME");
+    gtk_widget_set_name(lbl_user, "field_label");
+    gtk_widget_set_halign(lbl_user, GTK_ALIGN_START);
+    gtk_box_pack_start(GTK_BOX(content), lbl_user, FALSE, FALSE, 0);
+    w->entry_username = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_username), "Steam username");
+    gtk_box_pack_start(GTK_BOX(content), w->entry_username, FALSE, FALSE, 0);
+
+    /* Password */
+    GtkWidget *lbl_pass = gtk_label_new("PASSWORD");
+    gtk_widget_set_name(lbl_pass, "field_label");
+    gtk_widget_set_halign(lbl_pass, GTK_ALIGN_START);
+    gtk_box_pack_start(GTK_BOX(content), lbl_pass, FALSE, FALSE, 0);
+    w->entry_password = gtk_entry_new();
+    gtk_entry_set_visibility(GTK_ENTRY(w->entry_password), FALSE);
+    gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_password), "Steam password");
+    gtk_box_pack_start(GTK_BOX(content), w->entry_password, FALSE, FALSE, 0);
+
+    /* App ID */
+    GtkWidget *lbl_appid = gtk_label_new("APP ID");
+    gtk_widget_set_name(lbl_appid, "field_label");
+    gtk_widget_set_halign(lbl_appid, GTK_ALIGN_START);
+    gtk_box_pack_start(GTK_BOX(content), lbl_appid, FALSE, FALSE, 0);
+    w->entry_appid = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
+    gtk_box_pack_start(GTK_BOX(content), w->entry_appid, FALSE, FALSE, 0);
 
     /* Run button */
     w->btn = gtk_button_new_with_label("▶   RUN");
     gtk_widget_set_name(w->btn, "run_btn");
-    gtk_widget_set_size_request(w->btn, 220, 50);
+    gtk_widget_set_size_request(w->btn, 220, 46);
     GtkWidget *btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_widget_set_halign(btn_box, GTK_ALIGN_CENTER);
     gtk_box_pack_start(GTK_BOX(btn_box), w->btn, FALSE, FALSE, 0);
@@ -372,7 +433,7 @@ int main(int argc, char *argv[]) {
     GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_widget_set_size_request(scroll, -1, 160);
+    gtk_widget_set_size_request(scroll, -1, 100);
     w->log_buf = gtk_text_buffer_new(NULL);
     w->log_view = gtk_text_view_new_with_buffer(w->log_buf);
     gtk_widget_set_name(w->log_view, "log");
@@ -385,7 +446,7 @@ int main(int argc, char *argv[]) {
     GtkTextIter end;
     gtk_text_buffer_get_end_iter(w->log_buf, &end);
     gtk_text_buffer_insert(w->log_buf, &end,
-        "[ SLS-TG INITIALIZED ]\n[ PRESS RUN TO START ]", -1);
+        "[ SLS-TG INITIALIZED ]\n[ FILL IN THE FIELDS AND PRESS RUN ]", -1);
 
     /* Status */
     w->status_label = gtk_label_new("READY");
@@ -406,8 +467,8 @@ int main(int argc, char *argv[]) {
         "<a href='https://github.com/Deadboy666/h3adcr-b'>"
         "<span foreground='#aaaaaa' size='medium' underline='none'>h3adcr-b</span></a>"
         " ❖ "
-        "<a href='https://github.com/Ke619/UI-CRAB'>"
-        "<span foreground='#aaaaaa' size='medium' underline='none'>UI-CRAB</span></a>");
+        "<a href='https://github.com/Ke619/SLS-TG'>"
+        "<span foreground='#aaaaaa' size='medium' underline='none'>SLS-TG</span></a>");
     gtk_label_set_use_markup(GTK_LABEL(w->footer_link), TRUE);
     gtk_label_set_track_visited_links(GTK_LABEL(w->footer_link), FALSE);
     gtk_widget_set_name(w->footer_link, "footer");
