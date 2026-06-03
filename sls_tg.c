@@ -60,7 +60,7 @@ static const char *CSS =
     "scrolledwindow { }"
     "#field_label { color: #aaaaaa; font-size: 11px; letter-spacing: 2px; }"
     "entry { background-color: #0d0000; color: #cc2200; border: 1px solid #cc2200;"
-    "  border-radius: 0; padding: 6px 10px; font-size: 13px; }"
+    "  border-radius: 0; padding: 6px 10px; font-size: 13px; min-height: 32px; }"
     "entry:focus { border-color: #ff3300; }"
     "#sep { background-color: #2a0000; min-width: 1px; }"
     "#footer { color: #aaaaaa; font-size: 10px; }"
