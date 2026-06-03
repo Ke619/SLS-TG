@@ -50,7 +50,7 @@ static const char *CSS =
     "#outer_frame { background-color: transparent; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
-    "#run_btn { background: rgba(0,0,0,0.4); color: #ffffff; border: 2px solid #000000;"
+    "#run_btn { background: rgba(0,0,0,0.4); color: #ffffff; border: 2px solid #ffffff;"
     "  font-size: 15px; font-weight: bold; letter-spacing: 3px; padding: 10px 40px; border-radius: 50px; }"
     "#run_btn:hover { background-color: rgba(0,0,0,0.55); color: #ffffff; }"
     "#run_btn:active { background-color: rgba(0,0,0,0.7); color: #ffffff; }"
