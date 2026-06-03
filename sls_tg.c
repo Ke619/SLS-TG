@@ -467,6 +467,8 @@ int main(int argc, char *argv[]) {
     snprintf(bg_path, sizeof(bg_path), "%s/Bg.png", saved_dir);
     w->bg_pixbuf = g_file_test(bg_path, G_FILE_TEST_EXISTS) ?
         gdk_pixbuf_new_from_file(bg_path, NULL) : NULL;
+    gtk_widget_set_app_paintable(w->window, TRUE);
+    g_signal_connect(w->window, "draw", G_CALLBACK(on_draw), w);
     gtk_widget_set_app_paintable(w->outer_frame, TRUE);
     g_signal_connect(w->outer_frame, "draw", G_CALLBACK(on_draw), w);
 
