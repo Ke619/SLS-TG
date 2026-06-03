@@ -43,7 +43,7 @@ typedef struct {
 
 static const char *CSS =
     "window { background-color: #000000; }"
-    "image { background-color: #000000; }"
+    "image { background-color: transparent; }"
     "#logo_box { background-color: transparent; }"
     "#outer_frame { background-color: #000000; margin: 3px; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
