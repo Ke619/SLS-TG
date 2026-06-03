@@ -527,6 +527,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(header), logo_center, FALSE, FALSE, 0);
 
     gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), w->log_scroll, FALSE, FALSE, 0);
 
 
     /* Log scroll - hidden by default, shown when Logs is clicked */
@@ -540,10 +541,9 @@ int main(int argc, char *argv[]) {
     gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(log_view2), FALSE);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(log_view2), GTK_WRAP_WORD_CHAR);
     gtk_container_add(GTK_CONTAINER(w->log_scroll), log_view2);
+    gtk_widget_show(log_view2);
     gtk_widget_set_no_show_all(w->log_scroll, TRUE);
-    gtk_box_pack_start(GTK_BOX(vbox), w->log_scroll, FALSE, FALSE, 0);
-
-    /* Single column layout */
+    /* log_scroll positioned after header in toggle */
     GtkWidget *left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_start(left, 24);
     gtk_widget_set_margin_end(left, 24);
