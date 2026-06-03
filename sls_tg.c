@@ -394,7 +394,7 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     int win_w = gtk_widget_get_allocated_width(widget);
     int win_h = gtk_widget_get_allocated_height(widget);
     int border = 3;
-    int bottom_border = 25;
+    int bottom_border = 35;
     int inner_w = win_w - border * 2;
     int inner_h = win_h - border - bottom_border;
     /* Fill whole widget black first */
@@ -607,20 +607,20 @@ int main(int argc, char *argv[]) {
 
 
     /* Footer goes directly into vbox at the very bottom */
+    /* Bottom row: footer centered, X on right */
+    GtkWidget *bottom_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_widget_set_margin_bottom(bottom_row, 4);
+    gtk_box_pack_end(GTK_BOX(vbox), bottom_row, FALSE, FALSE, 0);
+
+    /* Spacer left */
+    GtkWidget *spacer_left = gtk_label_new("");
+    gtk_widget_set_hexpand(spacer_left, TRUE);
+    gtk_box_pack_start(GTK_BOX(bottom_row), spacer_left, TRUE, TRUE, 0);
+
     GtkWidget *footer_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_set_halign(footer_box, GTK_ALIGN_CENTER);
-    gtk_widget_set_margin_bottom(footer_box, 6);
-    gtk_box_pack_end(GTK_BOX(vbox), footer_box, FALSE, FALSE, 0);
 
     /* Close button bottom right */
-    w->close_btn = gtk_button_new_with_label("✕");
-    gtk_widget_set_name(w->close_btn, "close_btn");
-    gtk_widget_set_halign(w->close_btn, GTK_ALIGN_END);
-    gtk_widget_set_valign(w->close_btn, GTK_ALIGN_END);
-    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(on_btn_click), w);
-    g_signal_connect(w->close_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
-    gtk_box_pack_end(GTK_BOX(vbox), w->close_btn, FALSE, FALSE, 0);
+
     w->footer_link = gtk_label_new(
         "<a href='https://github.com/AceSLS/SLSsteam'>"
         "<span foreground='#aaaaaa' size='medium' underline='none'>SLSsteam</span></a>"
@@ -631,7 +631,20 @@ int main(int argc, char *argv[]) {
     gtk_label_set_track_visited_links(GTK_LABEL(w->footer_link), FALSE);
     gtk_widget_set_name(w->footer_link, "footer");
     gtk_box_pack_start(GTK_BOX(footer_box), w->footer_link, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(bottom), footer_box, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(bottom_row), footer_box, FALSE, FALSE, 0);
+
+    /* Spacer right */
+    GtkWidget *spacer_right = gtk_label_new("");
+    gtk_widget_set_hexpand(spacer_right, TRUE);
+    gtk_box_pack_start(GTK_BOX(bottom_row), spacer_right, TRUE, TRUE, 0);
+
+    /* Close button on right */
+    w->close_btn = gtk_button_new_with_label("✕");
+    gtk_widget_set_name(w->close_btn, "close_btn");
+    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(on_btn_click), w);
+    g_signal_connect(w->close_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
+    gtk_box_pack_end(GTK_BOX(bottom_row), w->close_btn, FALSE, FALSE, 0);
 
     gtk_widget_show_all(w->window);
 
