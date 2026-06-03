@@ -32,6 +32,7 @@ typedef struct {
     guint hold_timer;
     guint dot_timer;
     int dot_count;
+    int error_set;
     char bin_path[512];
     char icon_path[512];
 } AppWidgets;
@@ -191,7 +192,7 @@ static gboolean on_done(gpointer data) {
     if (code == 0) {
         gtk_label_set_text(GTK_LABEL(w->status_label), "TICKET GENERATED!");
         gtk_widget_set_name(w->status_label, "status_done");
-    } else {
+    } else if (!w->error_set) {
         gtk_label_set_text(GTK_LABEL(w->status_label), "CRITICAL ERROR");
         gtk_widget_set_name(w->status_label, "status_error");
     }
@@ -232,6 +233,7 @@ static gboolean apply_status(gpointer data) {
     }
     gtk_label_set_text(GTK_LABEL(w->status_label), su->status);
     gtk_widget_set_name(w->status_label, su->is_error ? "status_error" : "status");
+    if (su->is_error) w->error_set = 1;
     free(su);
     return G_SOURCE_REMOVE;
 }
@@ -264,10 +266,8 @@ static gpointer run_thread(gpointer data) {
         log_from_thread(w, line);
 
         if (strstr(line, "Connected to Steam")) {
-            update_status(w, "LOGGING IN.", 0, 0);
-        } else if (strstr(line, "Logging in")) {
             update_status(w, "AWAITING STEAM GUARD AUTHENTICATION", 0, 1);
-        } else if (strstr(line, "Logged in")) {
+        } else if (strstr(line, "Logged in as")) {
             update_status(w, "GENERATING YOUR TICKET.", 0, 0);
 
         } else if (strstr(line, "Saved")) {
@@ -324,6 +324,7 @@ static void on_run_clicked(GtkWidget *btn, gpointer data) {
     gtk_label_set_text(GTK_LABEL(w->status_label), "CONNECTING.");
     w->dot_timer = g_timeout_add(500, on_dot_tick, w);
     gtk_widget_set_name(w->status_label, "status");
+    w->error_set = 0;
     gtk_text_buffer_set_text(w->log_buf, "", -1);
     ThreadData *td = malloc(sizeof(ThreadData));
     td->w = w;
