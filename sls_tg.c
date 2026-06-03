@@ -35,6 +35,7 @@ typedef struct {
     int error_set;
     char bin_path[512];
     char icon_path[512];
+    char taskbar_icon[512];
     GdkPixbuf *bg_pixbuf;
     char logo_idle[512];
     char logo_processing[512];
@@ -446,6 +447,7 @@ int main(int argc, char *argv[]) {
     char saved_dir[512];
     snprintf(saved_dir, sizeof(saved_dir), "%s", dir);
     snprintf(w->icon_path, sizeof(w->icon_path), "%s/L0.png", dir);
+    snprintf(w->taskbar_icon, sizeof(w->taskbar_icon), "%s/Icon.png", dir);
     snprintf(w->logo_idle, sizeof(w->logo_idle), "%s/L0.png", dir);
     snprintf(w->logo_processing, sizeof(w->logo_processing), "%s/L1.png", dir);
     snprintf(w->logo_success, sizeof(w->logo_success), "%s/L3.png", dir);
@@ -495,8 +497,8 @@ int main(int argc, char *argv[]) {
     gtk_window_set_resizable(GTK_WINDOW(w->window), FALSE);
     gtk_window_set_decorated(GTK_WINDOW(w->window), FALSE);
     gtk_container_set_border_width(GTK_CONTAINER(w->window), 0);
-    if (g_file_test(w->icon_path, G_FILE_TEST_EXISTS))
-        gtk_window_set_icon_from_file(GTK_WINDOW(w->window), w->icon_path, NULL);
+    if (g_file_test(w->taskbar_icon, G_FILE_TEST_EXISTS))
+        gtk_window_set_icon_from_file(GTK_WINDOW(w->window), w->taskbar_icon, NULL);
     g_signal_connect(w->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     /* Load background image */
