@@ -25,8 +25,6 @@ typedef struct {
     GtkWidget *overlay;
     GtkWidget *dim_layer;
     GtkWidget *footer_link;
-    GtkWidget *stack;
-    int logs_visible;
     GstElement *music_player;
     GstElement *sfx_click;
     GstElement *sfx_hover;
@@ -37,7 +35,6 @@ typedef struct {
     int error_set;
     char bin_path[512];
     char icon_path[512];
-    GdkPixbuf *bg_pixbuf;
     char logo_idle[512];
     char logo_processing[512];
     char logo_success[512];
@@ -76,10 +73,7 @@ static const char *CSS =
     "entry.password { font-family: monospace; }"
     "#sep { background-color: #2a0000; min-width: 1px; }"
     "#footer { color: #aaaaaa; font-size: 10px; }"
-    "#dim_layer { background-color: rgba(0,0,0,0.75); }"
-    "#logs_btn { background: transparent; color: #000000; border: none; padding: 0; font-size: 11px; box-shadow: none; }"
-    "#logs_btn:hover { color: #cc2200; background: transparent; border: none; }"
-    "#logs_btn:active { background: transparent; border: none; }";
+    "#dim_layer { background-color: rgba(0,0,0,0.75); }";
 
 static void save_music(int playing) {
     const char *home = g_get_home_dir();
@@ -195,7 +189,7 @@ static gboolean append_log(gpointer data) {
 
 static void set_logo(AppWidgets *w, const char *path) {
     if (!g_file_test(path, G_FILE_TEST_EXISTS)) return;
-    GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(path, 400, 400, TRUE, NULL);
+    GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(path, 160, 160, TRUE, NULL);
     if (pb) gtk_image_set_from_pixbuf(GTK_IMAGE(w->logo_image), pb);
 }
 
@@ -308,8 +302,9 @@ static gpointer run_thread(gpointer data) {
         log_from_thread(w, line);
 
         if (strstr(line, "Connected to Steam")) {
-            update_status(w, "AWAITING STEAM GUARD AUTHENTICATION", 0, 1);
+            update_status(w, "LOGGING IN.", 0, 0);
         } else if (strstr(line, "Logged in as")) {
+            update_status(w, "AWAITING STEAM GUARD AUTHENTICATION", 0, 1);
         } else if (strstr(line, "Account Info received")) {
             update_status(w, "GENERATING YOUR TICKET.", 0, 0);
 
@@ -386,32 +381,6 @@ static gboolean on_topbar_drag(GtkWidget *widget, GdkEventButton *event, gpointe
     return FALSE;
 }
 
-static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
-    AppWidgets *w = (AppWidgets *)data;
-    if (!w->bg_pixbuf) return FALSE;
-    int win_w = gtk_widget_get_allocated_width(widget);
-    int win_h = gtk_widget_get_allocated_height(widget);
-    GdkPixbuf *scaled = gdk_pixbuf_scale_simple(w->bg_pixbuf, win_w, win_h, GDK_INTERP_BILINEAR);
-    if (scaled) {
-        gdk_cairo_set_source_pixbuf(cr, scaled, 0, 0);
-        cairo_paint(cr);
-        g_object_unref(scaled);
-    }
-    return FALSE;
-}
-
-static void on_toggle_logs(GtkWidget *btn, gpointer data) {
-    AppWidgets *w = (AppWidgets *)data;
-    w->logs_visible = !w->logs_visible;
-    if (w->logs_visible) {
-        gtk_stack_set_visible_child_name(GTK_STACK(w->stack), "logs");
-        gtk_button_set_label(GTK_BUTTON(btn), "Back");
-    } else {
-        gtk_stack_set_visible_child_name(GTK_STACK(w->stack), "header");
-        gtk_button_set_label(GTK_BUTTON(btn), "Logs");
-    }
-}
-
 int main(int argc, char *argv[]) {
     gst_init(&argc, &argv);
     gtk_init(&argc, &argv);
@@ -419,11 +388,8 @@ int main(int argc, char *argv[]) {
     AppWidgets *w = g_new0(AppWidgets, 1);
     w->music_playing = 0;
     w->hold_timer = 0;
-    w->logs_visible = 0;
 
     char *dir = g_path_get_dirname(argv[0]);
-    char saved_dir[512];
-    snprintf(saved_dir, sizeof(saved_dir), "%s", dir);
     snprintf(w->icon_path, sizeof(w->icon_path), "%s/L0.png", dir);
     snprintf(w->logo_idle, sizeof(w->logo_idle), "%s/L0.png", dir);
     snprintf(w->logo_processing, sizeof(w->logo_processing), "%s/L1.png", dir);
@@ -502,35 +468,20 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), topbar, FALSE, FALSE, 0);
 
     /* Header - centered logo, title, subtitle */
-    /* Stack for header/logs toggle */
-    w->stack = gtk_stack_new();
-    gtk_stack_set_transition_type(GTK_STACK(w->stack), GTK_STACK_TRANSITION_TYPE_NONE);
-    gtk_box_pack_start(GTK_BOX(vbox), w->stack, FALSE, FALSE, 0);
-
     GtkWidget *header = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
     gtk_widget_set_name(header, "header");
     gtk_widget_set_margin_top(header, 6);
     gtk_widget_set_margin_bottom(header, 8);
 
-    /* Logo image widget */
-    GdkPixbuf *pb0 = g_file_test(w->icon_path, G_FILE_TEST_EXISTS) ?
-        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 400, 400, TRUE, NULL) : NULL;
-    w->logo_image = pb0 ? gtk_image_new_from_pixbuf(pb0) : gtk_image_new();
-    GtkWidget *event_box = gtk_event_box_new();
-    gtk_widget_set_name(event_box, "logo_box");
-    gtk_container_add(GTK_CONTAINER(event_box), w->logo_image);
-    gtk_widget_add_events(event_box, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-    g_signal_connect(event_box, "button-press-event", G_CALLBACK(on_logo_press), w);
-    g_signal_connect(event_box, "button-release-event", G_CALLBACK(on_logo_release), w);
-    GtkWidget *logo_center = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_set_halign(logo_center, GTK_ALIGN_CENTER);
-    gtk_box_pack_start(GTK_BOX(logo_center), event_box, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(header), logo_center, FALSE, FALSE, 0);
+    /* Logo placeholder - space reserved for bigger logo */
+    GtkWidget *logo_placeholder = gtk_label_new("");
+    gtk_widget_set_size_request(logo_placeholder, -1, 160);
+    gtk_box_pack_start(GTK_BOX(header), logo_placeholder, FALSE, FALSE, 0);
 
-    gtk_stack_add_named(GTK_STACK(w->stack), header, "header");
+    gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
 
 
-    /* log_scroll removed - using GtkStack now */
+    /* Single column layout */
     GtkWidget *left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_start(left, 24);
     gtk_widget_set_margin_end(left, 24);
@@ -616,26 +567,6 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_name(w->footer_link, "footer");
     gtk_box_pack_start(GTK_BOX(footer_box), w->footer_link, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(bottom), footer_box, FALSE, FALSE, 0);
-
-    /* Load background image */
-    char bg_path2[512];
-    snprintf(bg_path2, sizeof(bg_path2), "%s/Bg.png", saved_dir);
-    w->bg_pixbuf = g_file_test(bg_path2, G_FILE_TEST_EXISTS) ?
-        gdk_pixbuf_new_from_file(bg_path2, NULL) : NULL;
-
-    /* Connect draw signal for background */
-    gtk_widget_set_app_paintable(w->window, TRUE);
-    g_signal_connect(w->window, "draw", G_CALLBACK(on_draw), w);
-    gtk_widget_set_app_paintable(w->outer_frame, TRUE);
-    g_signal_connect(w->outer_frame, "draw", G_CALLBACK(on_draw), w);
-
-    /* Logs button - plain text at very bottom */
-    GtkWidget *logs_btn = gtk_button_new_with_label("Logs");
-    gtk_widget_set_name(logs_btn, "logs_btn");
-    gtk_widget_set_halign(logs_btn, GTK_ALIGN_CENTER);
-    gtk_widget_set_margin_bottom(logs_btn, 4);
-    gtk_box_pack_end(GTK_BOX(vbox), logs_btn, FALSE, FALSE, 0);
-    g_signal_connect(logs_btn, "clicked", G_CALLBACK(on_toggle_logs), w);
 
     gtk_widget_show_all(w->window);
 
