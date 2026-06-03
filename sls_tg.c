@@ -55,7 +55,7 @@ static const char *CSS =
     "#run_btn:hover { background-color: rgba(0,0,0,0.55); color: #ffffff; }"
     "#run_btn:active { background-color: rgba(0,0,0,0.7); color: #ffffff; }"
     "#run_btn:disabled { background-color: transparent; color: #888; border-color: #888; }"
-    "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200;"
+    "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200; margin-top: 3px; margin-right: 3px;"
     "  font-size: 18px; font-weight: bold; padding: 2px 8px; min-width: 28px; min-height: 28px; border-radius: 0; }"
     "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
     "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
