@@ -619,6 +619,7 @@ int main(int argc, char *argv[]) {
 
     GtkWidget *info_btn = gtk_button_new_with_label("i");
     gtk_widget_set_name(info_btn, "info_btn");
+    gtk_widget_set_size_request(info_btn, 22, 22);
     g_signal_connect(info_btn, "clicked", G_CALLBACK(on_info_clicked), w);
     g_signal_connect(info_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
     gtk_box_pack_start(GTK_BOX(footer_box), info_btn, FALSE, FALSE, 0);
