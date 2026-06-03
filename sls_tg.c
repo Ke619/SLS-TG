@@ -533,6 +533,11 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
 
 
+    /* Status label below logo */
+    gtk_widget_set_name(w->status_label, "status");
+    gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
+    gtk_box_pack_start(GTK_BOX(vbox), w->status_label, FALSE, FALSE, 4);
+
     /* Single column layout */
     GtkWidget *left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_margin_start(left, 24);
@@ -599,9 +604,7 @@ int main(int argc, char *argv[]) {
     g_signal_connect(w->btn, "clicked", G_CALLBACK(on_btn_click), w);
     g_signal_connect(w->btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
 
-    gtk_widget_set_name(w->status_label, "status");
-    gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
-    gtk_box_pack_start(GTK_BOX(bottom), w->status_label, FALSE, FALSE, 4);
+
 
     /* Footer goes directly into vbox at the very bottom */
     GtkWidget *footer_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
