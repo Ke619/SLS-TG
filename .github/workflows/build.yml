@@ -34,6 +34,7 @@ jobs:
           cp L1.png AppDir/usr/bin/L1.png
           cp L2.png AppDir/usr/bin/L2.png
           cp L3.png AppDir/usr/bin/L3.png
+          cp Bg.png AppDir/usr/bin/Bg.png
 
       - name: Download appimagetool
         run: |
