@@ -190,7 +190,7 @@ static gboolean append_log(gpointer data) {
 
 static void set_logo(AppWidgets *w, const char *path) {
     if (!g_file_test(path, G_FILE_TEST_EXISTS)) return;
-    GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(path, 160, 160, TRUE, NULL);
+    GdkPixbuf *pb = gdk_pixbuf_new_from_file_at_scale(path, 400, 400, TRUE, NULL);
     if (pb) gtk_image_set_from_pixbuf(GTK_IMAGE(w->logo_image), pb);
 }
 
