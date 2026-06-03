@@ -38,7 +38,7 @@ static const char *CSS =
     "window { background-color: #cc2200; }"
     "image { background-color: #000000; }"
     "#logo_box { background-color: transparent; }"
-    "#outer_frame { background-color: #000000; }"
+    "#outer_frame { background-color: #000000; margin: 3px; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: #0d0000; color: #cc2200; border: 2px solid #cc2200;"
@@ -383,9 +383,6 @@ int main(int argc, char *argv[]) {
 
     gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
 
-    /* Horizontal separator under header */
-    GtkWidget *hsep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_box_pack_start(GTK_BOX(vbox), hsep, FALSE, FALSE, 0);
 
     /* Two-column middle section */
     GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -426,9 +423,6 @@ int main(int argc, char *argv[]) {
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_appid), "e.g. 480");
     gtk_box_pack_start(GTK_BOX(left), w->entry_appid, FALSE, FALSE, 0);
 
-    /* Vertical separator */
-    GtkWidget *vsep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-    gtk_box_pack_start(GTK_BOX(hbox), vsep, FALSE, FALSE, 0);
 
     /* RIGHT: log */
     GtkWidget *right = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -461,9 +455,6 @@ int main(int argc, char *argv[]) {
     gtk_text_buffer_insert(w->log_buf, &end,
         "[ SLS-TG INITIALIZED ]\n[ FILL IN THE FIELDS AND PRESS RUN ]", -1);
 
-    /* Horizontal separator above bottom section */
-    GtkWidget *hsep2 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_box_pack_start(GTK_BOX(vbox), hsep2, FALSE, FALSE, 0);
 
     /* Bottom section: Run button + footer */
     GtkWidget *bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
