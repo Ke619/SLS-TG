@@ -500,10 +500,20 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_margin_top(header, 6);
     gtk_widget_set_margin_bottom(header, 8);
 
-    /* Logo placeholder - space reserved for bigger logo */
-    GtkWidget *logo_placeholder = gtk_label_new("");
-    gtk_widget_set_size_request(logo_placeholder, -1, 160);
-    gtk_box_pack_start(GTK_BOX(header), logo_placeholder, FALSE, FALSE, 0);
+    /* Logo image widget */
+    GdkPixbuf *pb0 = g_file_test(w->icon_path, G_FILE_TEST_EXISTS) ?
+        gdk_pixbuf_new_from_file_at_scale(w->icon_path, 400, 400, TRUE, NULL) : NULL;
+    w->logo_image = pb0 ? gtk_image_new_from_pixbuf(pb0) : gtk_image_new();
+    GtkWidget *event_box = gtk_event_box_new();
+    gtk_widget_set_name(event_box, "logo_box");
+    gtk_container_add(GTK_CONTAINER(event_box), w->logo_image);
+    gtk_widget_add_events(event_box, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+    g_signal_connect(event_box, "button-press-event", G_CALLBACK(on_logo_press), w);
+    g_signal_connect(event_box, "button-release-event", G_CALLBACK(on_logo_release), w);
+    GtkWidget *logo_center = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_widget_set_halign(logo_center, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(logo_center), event_box, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(header), logo_center, FALSE, FALSE, 0);
 
     gtk_box_pack_start(GTK_BOX(vbox), header, FALSE, FALSE, 0);
 
