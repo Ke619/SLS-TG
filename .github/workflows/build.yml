@@ -36,6 +36,7 @@ jobs:
           cp L3.png AppDir/usr/bin/L3.png
           cp Bg.png AppDir/usr/bin/Bg.png
           cp ticket.mp3 AppDir/usr/bin/ticket.mp3
+          cp Icon.png AppDir/usr/bin/Icon.png
 
       - name: Download appimagetool
         run: |
