@@ -42,10 +42,10 @@ typedef struct {
 } AppWidgets;
 
 static const char *CSS =
-    "window { background-image: url('Bg.png'); background-size: cover; }"
+    "window { background-color: #000000; }"
     "image { background-color: #000000; }"
     "#logo_box { background-color: transparent; }"
-    "#outer_frame { background-image: url('Bg.png'); background-size: cover; margin: 3px; }"
+    "#outer_frame { background-color: #000000; margin: 3px; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: #0d0000; color: #cc2200; border: 2px solid #cc2200;"
@@ -389,6 +389,8 @@ int main(int argc, char *argv[]) {
     w->hold_timer = 0;
 
     char *dir = g_path_get_dirname(argv[0]);
+    char saved_dir[512];
+    snprintf(saved_dir, sizeof(saved_dir), "%s", dir);
     snprintf(w->icon_path, sizeof(w->icon_path), "%s/L0.png", dir);
     snprintf(w->logo_idle, sizeof(w->logo_idle), "%s/L0.png", dir);
     snprintf(w->logo_processing, sizeof(w->logo_processing), "%s/L1.png", dir);
@@ -423,7 +425,19 @@ int main(int argc, char *argv[]) {
         GTK_STYLE_PROVIDER(w->css_provider),
         GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
     );
-    gtk_css_provider_load_from_data(w->css_provider, CSS, -1, NULL);
+    {
+        char bg_path[512];
+        char bg_css[2048];
+        snprintf(bg_path, sizeof(bg_path), "%s/Bg.png", saved_dir);
+        if (g_file_test(bg_path, G_FILE_TEST_EXISTS)) {
+            snprintf(bg_css, sizeof(bg_css),
+                "%s #outer_frame { background-image: url('file://%s/Bg.png'); background-size: cover; margin: 3px; }",
+                CSS, saved_dir);
+            gtk_css_provider_load_from_data(w->css_provider, bg_css, -1, NULL);
+        } else {
+            gtk_css_provider_load_from_data(w->css_provider, CSS, -1, NULL);
+        }
+    }
 
     w->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(w->window), "SLS-TG");
