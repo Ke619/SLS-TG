@@ -380,9 +380,8 @@ int main(int argc, char *argv[]) {
     w->entry_username = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_username), "Steam username");
     gtk_widget_set_size_request(w->entry_username, -1, 36);
-    gtk_widget_set_margin_top(w->entry_username, 6);
     gtk_box_pack_start(GTK_BOX(grp_user), w->entry_username, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(left), grp_user, FALSE, FALSE, 12);
+    gtk_box_pack_start(GTK_BOX(left), grp_user, FALSE, FALSE, 4);
 
     /* PASSWORD */
     GtkWidget *grp_pass = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -391,9 +390,8 @@ int main(int argc, char *argv[]) {
     gtk_entry_set_visibility(GTK_ENTRY(w->entry_password), FALSE);
     gtk_entry_set_placeholder_text(GTK_ENTRY(w->entry_password), "Steam password");
     gtk_widget_set_size_request(w->entry_password, -1, 36);
-    gtk_widget_set_margin_top(w->entry_password, 6);
     gtk_box_pack_start(GTK_BOX(grp_pass), w->entry_password, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(left), grp_pass, FALSE, FALSE, 12);
+    gtk_box_pack_start(GTK_BOX(left), grp_pass, FALSE, FALSE, 4);
 
     /* APP ID */
     GtkWidget *grp_appid = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -406,30 +404,12 @@ int main(int argc, char *argv[]) {
 
 
     /* Log below fields */
-    GtkWidget *log_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_set_margin_start(log_box, 24);
-    gtk_widget_set_margin_end(log_box, 24);
-    gtk_widget_set_margin_top(log_box, 8);
-    gtk_box_pack_start(GTK_BOX(vbox), log_box, TRUE, TRUE, 0);
-
-    GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    /* Log hidden - buffers kept for future use */
     w->log_buf = gtk_text_buffer_new(NULL);
     w->log_view = gtk_text_view_new_with_buffer(w->log_buf);
-    gtk_widget_set_name(w->log_view, "log");
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(w->log_view), FALSE);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(w->log_view), FALSE);
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(w->log_view), GTK_WRAP_WORD_CHAR);
-    gtk_container_add(GTK_CONTAINER(scroll), w->log_view);
-    gtk_box_pack_start(GTK_BOX(log_box), scroll, TRUE, TRUE, 0);
 
     /* Status below log */
     w->status_label = gtk_label_new("READY");
-    gtk_widget_set_name(w->status_label, "status");
-    gtk_label_set_xalign(GTK_LABEL(w->status_label), 0.5);
-    gtk_box_pack_start(GTK_BOX(log_box), w->status_label, FALSE, FALSE, 4);
-
     GtkTextIter end;
     gtk_text_buffer_get_end_iter(w->log_buf, &end);
     gtk_text_buffer_insert(w->log_buf, &end,
