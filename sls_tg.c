@@ -47,7 +47,7 @@ static const char *CSS =
     "window { background-color: #000000; }"
     "image { background-color: transparent; }"
     "#logo_box { background-color: transparent; }"
-    "#outer_frame { background-color: transparent; margin: 3px; border: none; }"
+    "#outer_frame { background-color: transparent; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: rgba(0,0,0,0.4); color: #ffffff; border: 2px solid #000000;"
@@ -388,9 +388,16 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     if (!w->bg_pixbuf) return FALSE;
     int win_w = gtk_widget_get_allocated_width(widget);
     int win_h = gtk_widget_get_allocated_height(widget);
-    GdkPixbuf *scaled = gdk_pixbuf_scale_simple(w->bg_pixbuf, win_w, win_h, GDK_INTERP_BILINEAR);
+    int border = 3;
+    int inner_w = win_w - border * 2;
+    int inner_h = win_h - border * 2;
+    /* Fill whole widget black first */
+    cairo_set_source_rgb(cr, 0, 0, 0);
+    cairo_paint(cr);
+    /* Draw bg inside the border */
+    GdkPixbuf *scaled = gdk_pixbuf_scale_simple(w->bg_pixbuf, inner_w, inner_h, GDK_INTERP_BILINEAR);
     if (scaled) {
-        gdk_cairo_set_source_pixbuf(cr, scaled, 0, 0);
+        gdk_cairo_set_source_pixbuf(cr, scaled, border, border);
         cairo_paint(cr);
         g_object_unref(scaled);
     }
@@ -467,8 +474,8 @@ int main(int argc, char *argv[]) {
     snprintf(bg_path, sizeof(bg_path), "%s/Bg.png", saved_dir);
     w->bg_pixbuf = g_file_test(bg_path, G_FILE_TEST_EXISTS) ?
         gdk_pixbuf_new_from_file(bg_path, NULL) : NULL;
-    gtk_widget_set_app_paintable(w->outer_frame, TRUE);
-    g_signal_connect(w->outer_frame, "draw", G_CALLBACK(on_draw), w);
+    gtk_widget_set_app_paintable(w->window, TRUE);
+    g_signal_connect(w->window, "draw", G_CALLBACK(on_draw), w);
 
     w->outer_frame = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_name(w->outer_frame, "outer_frame");
