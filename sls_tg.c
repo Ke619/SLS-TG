@@ -35,6 +35,7 @@ typedef struct {
     int error_set;
     char bin_path[512];
     char icon_path[512];
+    GdkPixbuf *bg_pixbuf;
     char logo_idle[512];
     char logo_processing[512];
     char logo_success[512];
@@ -381,6 +382,20 @@ static gboolean on_topbar_drag(GtkWidget *widget, GdkEventButton *event, gpointe
     return FALSE;
 }
 
+static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+    if (!w->bg_pixbuf) return FALSE;
+    int win_w = gtk_widget_get_allocated_width(widget);
+    int win_h = gtk_widget_get_allocated_height(widget);
+    GdkPixbuf *scaled = gdk_pixbuf_scale_simple(w->bg_pixbuf, win_w, win_h, GDK_INTERP_BILINEAR);
+    if (scaled) {
+        gdk_cairo_set_source_pixbuf(cr, scaled, 0, 0);
+        cairo_paint(cr);
+        g_object_unref(scaled);
+    }
+    return FALSE;
+}
+
 int main(int argc, char *argv[]) {
     gst_init(&argc, &argv);
     gtk_init(&argc, &argv);
@@ -390,6 +405,8 @@ int main(int argc, char *argv[]) {
     w->hold_timer = 0;
 
     char *dir = g_path_get_dirname(argv[0]);
+    char saved_dir[512];
+    snprintf(saved_dir, sizeof(saved_dir), "%s", dir);
     snprintf(w->icon_path, sizeof(w->icon_path), "%s/L0.png", dir);
     snprintf(w->logo_idle, sizeof(w->logo_idle), "%s/L0.png", dir);
     snprintf(w->logo_processing, sizeof(w->logo_processing), "%s/L1.png", dir);
@@ -435,6 +452,16 @@ int main(int argc, char *argv[]) {
     if (g_file_test(w->icon_path, G_FILE_TEST_EXISTS))
         gtk_window_set_icon_from_file(GTK_WINDOW(w->window), w->icon_path, NULL);
     g_signal_connect(w->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
+    /* Load background image */
+    char bg_path[512];
+    snprintf(bg_path, sizeof(bg_path), "%s/Bg.png", saved_dir);
+    w->bg_pixbuf = g_file_test(bg_path, G_FILE_TEST_EXISTS) ?
+        gdk_pixbuf_new_from_file(bg_path, NULL) : NULL;
+    gtk_widget_set_app_paintable(w->window, TRUE);
+    g_signal_connect(w->window, "draw", G_CALLBACK(on_draw), w);
+    gtk_widget_set_app_paintable(w->outer_frame, TRUE);
+    g_signal_connect(w->outer_frame, "draw", G_CALLBACK(on_draw), w);
 
     w->outer_frame = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_name(w->outer_frame, "outer_frame");
