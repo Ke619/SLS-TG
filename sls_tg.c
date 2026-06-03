@@ -393,7 +393,7 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     if (!w->bg_pixbuf) return FALSE;
     int win_w = gtk_widget_get_allocated_width(widget);
     int win_h = gtk_widget_get_allocated_height(widget);
-    int border = 3;
+    int border = 5;
     int bottom_border = 45;
     int inner_w = win_w - border * 2;
     int inner_h = win_h - border - bottom_border;
