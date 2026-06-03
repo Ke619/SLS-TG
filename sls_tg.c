@@ -50,10 +50,10 @@ static const char *CSS =
     "#outer_frame { background-color: transparent; margin: 3px; }"
     "#title { color: #cc2200; font-size: 22px; font-weight: bold; letter-spacing: 4px; }"
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
-    "#run_btn { background: transparent; color: #000000; border: 2px solid #000000;"
+    "#run_btn { background: rgba(0,0,0,0.4); color: #ffffff; border: 2px solid #000000;"
     "  font-size: 15px; font-weight: bold; letter-spacing: 3px; padding: 10px 40px; border-radius: 50px; }"
-    "#run_btn:hover { background-color: rgba(0,0,0,0.1); color: #000000; }"
-    "#run_btn:active { background-color: rgba(0,0,0,0.2); color: #000000; }"
+    "#run_btn:hover { background-color: rgba(0,0,0,0.55); color: #ffffff; }"
+    "#run_btn:active { background-color: rgba(0,0,0,0.7); color: #ffffff; }"
     "#run_btn:disabled { background-color: transparent; color: #888; border-color: #888; }"
     "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200;"
     "  font-size: 18px; font-weight: bold; padding: 2px 8px; min-width: 28px; min-height: 28px; border-radius: 0; }"
@@ -467,8 +467,6 @@ int main(int argc, char *argv[]) {
     snprintf(bg_path, sizeof(bg_path), "%s/Bg.png", saved_dir);
     w->bg_pixbuf = g_file_test(bg_path, G_FILE_TEST_EXISTS) ?
         gdk_pixbuf_new_from_file(bg_path, NULL) : NULL;
-    gtk_widget_set_app_paintable(w->window, TRUE);
-    g_signal_connect(w->window, "draw", G_CALLBACK(on_draw), w);
     gtk_widget_set_app_paintable(w->outer_frame, TRUE);
     g_signal_connect(w->outer_frame, "draw", G_CALLBACK(on_draw), w);
 
