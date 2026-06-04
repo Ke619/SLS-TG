@@ -22,6 +22,7 @@ SLS Ticket Grabber is a lightweight desktop app for SteamOS/SteamDeck. It provid
 
 The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket** for the specified App ID, and saves them as `.yaml` files in a `Tickets/` folder next to the AppImage, ready to be used with SLSsteam
 
+
 <p align="center">
   <img src="Demo.png" width="400">
 </p>
