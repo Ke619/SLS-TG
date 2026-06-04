@@ -43,7 +43,7 @@ sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.
 
 → **.NET 9 Runtime:** 
    - **For the Linux Build:** it's bundled inside the AppImage, no installation needed.
-   - **For the Windows Build:** it can be installed from [HERE](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/runtime?initial-os=windows)
+   - **For the Windows Build:** it can be installed from here: [x86](https://builds.dotnet.microsoft.com/dotnet/Runtime/9.0.16/dotnet-runtime-9.0.16-win-x86.exe) | [x64](https://builds.dotnet.microsoft.com/dotnet/Runtime/9.0.16/dotnet-runtime-9.0.16-win-x64.exe) | [Arm64](https://builds.dotnet.microsoft.com/dotnet/Runtime/9.0.16/dotnet-runtime-9.0.16-win-arm64.exe)
   
 ---
 
