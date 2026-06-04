@@ -10,7 +10,9 @@
 <br>
 
 <div align="center">
+  
   A GUI wrapper for *SLS Steam Ticket Grabber* — built for SteamDeck.
+  
 </div>
 
 ---
