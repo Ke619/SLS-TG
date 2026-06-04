@@ -11,7 +11,7 @@
 
 <div align="center">
   
-  A GUI wrapper for *SLSsteam Ticket Grabber Tool* — built for SteamOS | SteamDeck.
+  A GUI wrapper for *SLSsteam Ticket Grabber Tool* — built for Linux | Windows.
   
 </div>
 
@@ -41,7 +41,9 @@ sudo pacman -S gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-l
 sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav
 ```
 
-→ **.NET 9 Runtime** — bundled inside the AppImage, no installation needed.
+→ **.NET 9 Runtime:** 
+- bundled inside the AppImage for the Linux build, no installation needed.
+- For the Windows Build, it can be installed from [HERE](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/runtime?initial-os=windows)
 
 ---
 
@@ -84,7 +86,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 **→ Release v1.0:**
 - Dynamic logo that changes based on app state
 - Status indicators
-- Background music support — *hold the logo for 3 seconds to toggle*
+- Background music support — *hold the logo for 3 seconds to toggle* (Linux Only)
 - Sound effects on hover and click
 - Sound plays on successful ticket generation
 
