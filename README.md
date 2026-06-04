@@ -42,18 +42,18 @@ sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.
 ```
 
 → **.NET 9 Runtime:** 
-- bundled inside the AppImage for the Linux build, no installation needed.
-- For the Windows Build, it can be installed from [HERE](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/runtime?initial-os=windows)
-
+   - **For the Linux Build:** it's bundled inside the AppImage, no installation needed.
+   - **For the Windows Build:** it can be installed from [HERE](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/runtime?initial-os=windows)
+  
 ---
 
 ### Download:
-Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download the latest `SLS-TG.AppImage`
+Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download the latest `SLS-TG.AppImage` (Linux) or `SLS-TG.zip` (Windows)
 
 ---
 
 ### How to use:
-1. Launch the AppImage
+1. Launch the App
 2. Enter your **Steam username** and **Steam password**
 3. Enter the **App ID** of the game you want to grab a ticket for
 4. Press **Generate**
