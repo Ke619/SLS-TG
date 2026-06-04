@@ -101,7 +101,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 
 → This project is licensed under the [AGPL-3.0 License](LICENSE).
 
-→ Background Music For SLS-TG (BGM.wav) © 2026 Ke619. Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — free to use with attribution.
+→ Background Music For SLS-TG (BGM.wav) © 2026 Ke619. Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — *free to use with attribution.*
 
 <br><br>
 
