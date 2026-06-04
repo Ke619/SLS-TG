@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <time.h>
 #include <gst/gst.h>
 
@@ -298,6 +299,12 @@ static void update_status(AppWidgets *w, const char *status, int is_error, int s
 static gpointer run_thread(gpointer data) {
     ThreadData *td = (ThreadData *)data;
     AppWidgets *w = td->w;
+    /* Set working directory to ~/Downloads so tickets save there */
+    const char *home = g_get_home_dir();
+    char downloads[512];
+    snprintf(downloads, sizeof(downloads), "%s/Downloads", home);
+    mkdir(downloads, 0755);
+    chdir(downloads);
     log_from_thread(w, "[ LAUNCHING TICKET-GRABBER... ]");
     FILE *fp = popen(td->cmd, "r");
     free(td);
