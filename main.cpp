@@ -107,12 +107,8 @@ class MainWindow : public QMainWindow {
         if (isError) {
             errorSet = true;
             setLogo(logoError);
-            generateBtn->setEnabled(false);
+            generateBtn->setEnabled(true);
             playSfx(sadPlayer);
-            // Re-enable button when sad sound finishes
-            connect(sadPlayer, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus s) {
-                if (s == QMediaPlayer::EndOfMedia) generateBtn->setEnabled(true);
-            }, Qt::UniqueConnection);
         }
     }
 
