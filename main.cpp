@@ -18,6 +18,7 @@
 #include <QMouseEvent>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include <QWindow>
 
 class TicketWorker : public QThread {
     Q_OBJECT
