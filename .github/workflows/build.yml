@@ -1,56 +1,69 @@
-name: Build AppImage
+name: Build Windows EXE
+
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc libgtk-3-dev pkg-config libfuse2 libgstreamer1.0-dev wget
-          wget https://dot.net/v1/dotnet-install.sh
-          chmod +x dotnet-install.sh
-          ./dotnet-install.sh --runtime dotnet --version 9.0.16 --install-dir ./dotnet-runtime
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
 
-      - name: Compile
+      - name: Build ticket-grabber for Windows
         run: |
-          gcc sls_tg.c -o AppDir/usr/bin/sls_tg \
-            $(pkg-config --cflags --libs gtk+-3.0 gstreamer-1.0)
-          chmod +x AppDir/usr/bin/sls_tg
-          chmod +x AppDir/AppRun
-          cp BGM.wav AppDir/usr/bin/BGM.wav
-          cp Click.mp3 AppDir/usr/bin/Click.mp3
-          cp Hover.mp3 AppDir/usr/bin/Hover.mp3
-          cp ticket-grabber AppDir/usr/bin/ticket-grabber
-          chmod +x AppDir/usr/bin/ticket-grabber
-          cp -r ./dotnet-runtime AppDir/usr/bin/dotnet
-          cp L0.png AppDir/usr/bin/L0.png
-          cp L1.png AppDir/usr/bin/L1.png
-          cp L2.png AppDir/usr/bin/L2.png
-          cp L3.png AppDir/usr/bin/L3.png
-          cp Bg.png AppDir/usr/bin/Bg.png
-          cp ticket.mp3 AppDir/usr/bin/ticket.mp3
-          cp Icon.png AppDir/usr/bin/Icon.png
-          cp Happy.mp3 AppDir/usr/bin/Happy.mp3
-          cp Sad.mp3 AppDir/usr/bin/Sad.mp3
+          cd ticket-grabber
+          dotnet publish -r win-x64 --self-contained true -p:PublishSingleFile=true -c Release
+          copy bin\Release\net9.0\win-x64\publish\ticket-grabber.exe ..\ticket-grabber.exe
+          cd ..
 
-      - name: Download appimagetool
-        run: |
-          curl -Lo appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
-          chmod +x appimagetool
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.7.0'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+          modules: 'qtmultimedia'
 
-      - name: Build AppImage
+      - name: Configure and Build
         run: |
-          ARCH=x86_64 ./appimagetool AppDir SLS-TG-x86_64.AppImage
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+
+      - name: Deploy Qt dependencies
+        run: |
+          mkdir deploy
+          copy build\Release\SLS-TG.exe deploy\
+          windeployqt --release --multimedia deploy\SLS-TG.exe
+          copy BGM.wav deploy\
+          copy Click.mp3 deploy\
+          copy Hover.mp3 deploy\
+          copy ticket.mp3 deploy\
+          copy Happy.mp3 deploy\
+          copy Sad.mp3 deploy\
+          copy L0.png deploy\
+          copy L1.png deploy\
+          copy L2.png deploy\
+          copy L3.png deploy\
+          copy Bg.png deploy\
+          copy Icon.png deploy\
+          copy ticket-grabber.exe deploy\
+
+      - name: Package as ZIP
+        run: |
+          Compress-Archive -Path deploy\* -DestinationPath SLS-TG-Windows.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SLS-TG
-          path: SLS-TG-x86_64.AppImage
+          name: SLS-TG-Windows
+          path: SLS-TG-Windows.zip
