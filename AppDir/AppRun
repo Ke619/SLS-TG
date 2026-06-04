@@ -1,5 +1,0 @@
-#!/bin/bash
-HERE="$(dirname "$(readlink -f "$0")")"
-export DOTNET_ROOT="$HERE/usr/bin/dotnet"
-export PATH="$DOTNET_ROOT:$PATH"
-exec "$HERE/usr/bin/sls_tg" "$@"
