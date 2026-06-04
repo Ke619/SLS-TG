@@ -48,7 +48,7 @@ sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.
 ---
 
 ### Download:
-Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download the latest `SLS-TG.AppImage`
+Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download the latest `SLS-TG.AppImage` (Linux) or `SLS-TG.zip` (Windows)
 
 ---
 
