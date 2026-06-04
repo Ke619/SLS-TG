@@ -82,7 +82,8 @@ static const char *CSS =
     "entry.password { font-family: monospace; }"
     "#sep { background-color: #2a0000; min-width: 1px; }"
     "#footer { color: #aaaaaa; font-size: 10px; }"
-    "#dim_layer { background-color: rgba(0,0,0,0.75); }";
+    "#dim_layer { background-color: rgba(0,0,0,0.75); }"
+    "#version_label { color: #000000; font-size: 9px; letter-spacing: 1px; }";
 
 static void save_music(int playing) {
     const char *home = g_get_home_dir();
