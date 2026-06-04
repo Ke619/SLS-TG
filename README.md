@@ -11,7 +11,7 @@
 
 <div align="center">
   
-  A GUI wrapper for *SLSsteam Ticket Grabber Tool* — built for Linux | Windows.
+  A GUI wrapper for *SLSsteam Ticket Grabber Tool* — built for Linux and ported to Windows.
   
 </div>
 
