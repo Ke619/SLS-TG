@@ -71,8 +71,5 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 <div align="center">
   Based on the ticket-grabber tool by <a href="https://github.com/AceSLS/SLSsteam">AceSLS/SLSsteam</a>
 </div>
-<div align="center">
-  ♔ Based on <a href="https://github.com/Deadboy666/h3adcr-b">h3adcr-b</a> ♔
-</div>
 
 
