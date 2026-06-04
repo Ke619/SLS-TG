@@ -11,7 +11,7 @@
 
 <div align="center">
   
-  A GUI wrapper for The *SLSsteam Ticket Grabber Tool* — built for SteamOS | SteamDeck.
+  A GUI wrapper for *SLSsteam Ticket Grabber Tool* — built for SteamOS | SteamDeck.
   
 </div>
 
