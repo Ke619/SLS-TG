@@ -29,11 +29,6 @@ The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket**
 
 ---
 
-### Download:
-Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download the latest `SLS-TG.AppImage`
-
----
-
 ### Dependencies:
 The AppImage is self-contained for SteamDeck/SteamOS. If running on regular Linux (Arch, Ubuntu, etc.) make sure the following are installed:
 
@@ -49,7 +44,11 @@ sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.
 → **.NET 9 Runtime** — bundled inside the AppImage, no installation needed.
 
 ---
+### Download:
+Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download the latest `SLS-TG.AppImage`
 
+ <br>
+ 
 ### How to use:
 1. Launch the AppImage
 2. Enter your **Steam username** and **password**
