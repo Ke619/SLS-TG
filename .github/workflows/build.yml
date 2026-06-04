@@ -60,6 +60,7 @@ jobs:
 
       - name: Convert Icon to ICO
         run: |
+          pip install pillow
           python -c "
           from PIL import Image
           img = Image.open('Icon.png')
