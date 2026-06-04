@@ -101,8 +101,8 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 - Background Music For SLS-TG (BGM.wav) © 2026 Ke619. Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — free to use with attribution.
 
 <br><br>
-
-
+やったー！ うまくいった！できた！ 
+いいえ、うまくいきませんでした。もう一度試してください。
 <div align="center">
   Based on the ticket-grabber tool by <a href="https://github.com/AceSLS/SLSsteam">AceSLS</a>
 </div>
