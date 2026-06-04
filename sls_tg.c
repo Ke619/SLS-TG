@@ -60,12 +60,13 @@ static const char *CSS =
     "#run_btn:disabled { background-color: transparent; color: #888; border-color: #888; }"
     "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200; border-radius: 50%;"
     "  font-size: 11px; font-weight: bold; padding: 0; min-width: 20px; min-height: 20px; }"
-    "#close_btn:hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
-    "#close_btn:active { background: #880000; color: #ffffff; border-color: #880000; }"
+    "#close_btn.hover { background: #ff3300; color: #ffffff; border-color: #ff3300; }"
+    "#close_btn.active { background: #880000; color: #ffffff; border-color: #880000; }"
     "#info_btn { background: #5dade2; color: #ffffff; border: 2px solid #5dade2; border-radius: 50%; font-size: 11px; font-weight: bold; padding: 0; min-width: 22px; min-height: 22px; -gtk-outline-radius: 50%; }"
     "#info_btn.hover { background: #85c1e9; border-color: #85c1e9; }"
     "#info_btn:active { background: #2e86c1; border-color: #2e86c1; }"
     "#info_label { color: #ffffff; font-size: 11px; font-weight: bold; }"
+    "#close_label { color: #ffffff; font-size: 11px; font-weight: bold; }"
     "#topbar { background-color: transparent; }"
     "#header { background-color: transparent; }"
     "#status { color: #e6cc00; font-size: 14px; font-weight: bold; letter-spacing: 2px; }"
@@ -442,6 +443,27 @@ static gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     return FALSE;
 }
 
+static gboolean on_close_clicked(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+    play_sfx(w->sfx_click);
+    gtk_main_quit();
+    return FALSE;
+}
+
+static gboolean on_close_enter(GtkWidget *widget, GdkEventCrossing *event, gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+    play_sfx(w->sfx_hover);
+    GtkStyleContext *ctx = gtk_widget_get_style_context(widget);
+    gtk_style_context_add_class(ctx, "hover");
+    return FALSE;
+}
+
+static gboolean on_close_leave(GtkWidget *widget, GdkEventCrossing *event, gpointer data) {
+    GtkStyleContext *ctx = gtk_widget_get_style_context(widget);
+    gtk_style_context_remove_class(ctx, "hover");
+    return FALSE;
+}
+
 static gboolean on_info_enter(GtkWidget *widget, GdkEventCrossing *event, gpointer data) {
     AppWidgets *w = (AppWidgets *)data;
     play_sfx(w->sfx_hover);
@@ -711,11 +733,20 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_name(version_label, "version_label");
     gtk_box_pack_start(GTK_BOX(bottom_row), version_label, TRUE, TRUE, 0);
 
-    w->close_btn = gtk_button_new_with_label("✕");
+    w->close_btn = gtk_event_box_new();
     gtk_widget_set_name(w->close_btn, "close_btn");
-    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect(w->close_btn, "clicked", G_CALLBACK(on_btn_click), w);
-    g_signal_connect(w->close_btn, "enter-notify-event", G_CALLBACK(on_btn_enter), w);
+    gtk_widget_set_size_request(w->close_btn, 22, 22);
+    gtk_widget_set_halign(w->close_btn, GTK_ALIGN_END);
+    gtk_widget_set_valign(w->close_btn, GTK_ALIGN_CENTER);
+    gtk_widget_add_events(w->close_btn, GDK_BUTTON_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
+    g_signal_connect(w->close_btn, "button-press-event", G_CALLBACK(on_close_clicked), w);
+    g_signal_connect(w->close_btn, "enter-notify-event", G_CALLBACK(on_close_enter), w);
+    g_signal_connect(w->close_btn, "leave-notify-event", G_CALLBACK(on_close_leave), w);
+    GtkWidget *close_label = gtk_label_new("✕");
+    gtk_widget_set_name(close_label, "close_label");
+    gtk_widget_set_halign(close_label, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(close_label, GTK_ALIGN_CENTER);
+    gtk_container_add(GTK_CONTAINER(w->close_btn), close_label);
     gtk_box_pack_end(GTK_BOX(bottom_row), w->close_btn, FALSE, FALSE, 0);
 
     gtk_overlay_add_overlay(GTK_OVERLAY(w->overlay), bottom_row);
