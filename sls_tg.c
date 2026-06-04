@@ -53,7 +53,7 @@ static const char *CSS =
     "#subtitle { color: #aaaaaa; font-size: 10px; letter-spacing: 5px; }"
     "#run_btn { background: rgba(0,0,0,0.4); color: #ffffff; border: 2px solid #ffffff;"
     "  font-size: 15px; font-weight: bold; letter-spacing: 3px; padding: 10px 40px; border-radius: 50px; }"
-    "#run_btn:hover { background-color: rgba(0,0,0,0.55); color: #ffffff; }"
+    "#run_btn:hover { background-color: rgba(255,255,255,0.2); color: #ffffff; }"
     "#run_btn:active { background-color: rgba(0,0,0,0.7); color: #ffffff; }"
     "#run_btn:disabled { background-color: transparent; color: #888; border-color: #888; }"
     "#close_btn { background: #cc2200; color: #ffffff; border: 2px solid #cc2200; border-radius: 50%;"
