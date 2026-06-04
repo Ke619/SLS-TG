@@ -29,6 +29,8 @@ typedef struct {
     GstElement *sfx_click;
     GstElement *sfx_hover;
     GstElement *sfx_ticket;
+    GstElement *sfx_happy;
+    GstElement *sfx_sad;
     int music_playing;
     guint hold_timer;
     guint dot_timer;
@@ -216,6 +218,14 @@ static void update_logo(AppWidgets *w, const char *path) {
     g_idle_add(apply_logo, lu);
 }
 
+static gboolean on_sad_done(GstBus *bus, GstMessage *msg, gpointer data) {
+    AppWidgets *w = (AppWidgets *)data;
+    if (GST_MESSAGE_TYPE(msg) == GST_MESSAGE_EOS) {
+        gtk_widget_set_sensitive(w->btn, TRUE);
+    }
+    return TRUE;
+}
+
 static gboolean on_done(gpointer data) {
     char **args = (char **)data;
     AppWidgets *w = (AppWidgets *)args[0];
@@ -227,10 +237,16 @@ static gboolean on_done(gpointer data) {
         gtk_widget_set_name(w->status_label, "status_done");
         set_logo(w, w->logo_success);
         play_sfx(w->sfx_ticket);
+        play_sfx(w->sfx_happy);
     } else if (!w->error_set) {
         gtk_label_set_text(GTK_LABEL(w->status_label), "CRITICAL ERROR");
         gtk_widget_set_name(w->status_label, "status_error");
         set_logo(w, w->logo_error);
+        /* Keep button disabled until Sad.mp3 finishes */
+        GstBus *sad_bus2 = gst_element_get_bus(w->sfx_sad);
+        gst_bus_add_watch(sad_bus2, on_sad_done, w);
+        gst_object_unref(sad_bus2);
+        play_sfx(w->sfx_sad);
     }
     free(args[1]);
     free(args);
@@ -276,8 +292,12 @@ static gboolean apply_status(gpointer data) {
         gtk_widget_set_name(w->status_label, "status");
     if (su->is_error) {
         w->error_set = 1;
-        gtk_widget_set_sensitive(w->btn, TRUE);
         set_logo(w, w->logo_error);
+        /* Keep button disabled until Sad.mp3 finishes */
+        GstBus *sad_bus2 = gst_element_get_bus(w->sfx_sad);
+        gst_bus_add_watch(sad_bus2, on_sad_done, w);
+        gst_object_unref(sad_bus2);
+        play_sfx(w->sfx_sad);
     } else if (strcmp(su->status, "TICKET GENERATED!") == 0) {
         set_logo(w, w->logo_success);
     } else {
@@ -490,6 +510,22 @@ int main(int argc, char *argv[]) {
         gst_element_set_state(w->sfx_ticket, GST_STATE_PAUSED);
     }
 
+    char happy_uri[512];
+    snprintf(happy_uri, sizeof(happy_uri), "file://%s/Happy.mp3", saved_dir);
+    w->sfx_happy = gst_element_factory_make("playbin", "sfx_happy");
+    if (w->sfx_happy) {
+        g_object_set(w->sfx_happy, "uri", happy_uri, NULL);
+        gst_element_set_state(w->sfx_happy, GST_STATE_PAUSED);
+    }
+
+    char sad_uri[512];
+    snprintf(sad_uri, sizeof(sad_uri), "file://%s/Sad.mp3", saved_dir);
+    w->sfx_sad = gst_element_factory_make("playbin", "sfx_sad");
+    if (w->sfx_sad) {
+        g_object_set(w->sfx_sad, "uri", sad_uri, NULL);
+        gst_element_set_state(w->sfx_sad, GST_STATE_PAUSED);
+    }
+
     w->css_provider = gtk_css_provider_new();
     gtk_style_context_add_provider_for_screen(
         gdk_screen_get_default(),
@@ -700,6 +736,14 @@ int main(int argc, char *argv[]) {
     if (w->sfx_ticket) {
         gst_element_set_state(w->sfx_ticket, GST_STATE_NULL);
         gst_object_unref(w->sfx_ticket);
+    }
+    if (w->sfx_happy) {
+        gst_element_set_state(w->sfx_happy, GST_STATE_NULL);
+        gst_object_unref(w->sfx_happy);
+    }
+    if (w->sfx_sad) {
+        gst_element_set_state(w->sfx_sad, GST_STATE_NULL);
+        gst_object_unref(w->sfx_sad);
     }
 
     g_free(w);
