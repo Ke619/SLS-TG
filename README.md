@@ -87,7 +87,8 @@ sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.
 - The app uses your credentials only to authenticate with Steam — **nothing is stored or transmitted elsewhere**
 - Steam Guard approval is done via the Steam mobile app *(no code input needed)*
 
-<br>
+<br><br>
+
 
 <div align="center">
   Based on the ticket-grabber tool by <a href="https://github.com/AceSLS/SLSsteam">AceSLS</a>
