@@ -1,36 +1,76 @@
 <div align="center">
   
-# Headcrab Updater (GUI)
+# SLS Ticket Grabber (GUI)
 </div>
 
 <div align="center">
-  <img src="headcrab.png" width="200"/>
+  <img src="Icon.png" width="200"/>
 </div>
+
 <br>
+
 <div align="center">
-  A one-click GUI launcher for SteamDeck that fetches and applies the latest Headcrab patch from GitHub.
+  A GUI wrapper for the SLS Steam Ticket Grabber — built for SteamDeck.
+  ________________________________________________________________
 </div>
 
----
-
-### What is it ?:
-Headcrab Updater is a lightweight desktop app for SteamOS/SteamDeck. Instead of running a terminal command every time you want to update, just click Update and it handles everything automatically — fetching the latest patch script from GitHub and running it.
 <br><br>
+
+### What is it?:
+SLS Ticket Grabber is a lightweight desktop app for SteamOS/SteamDeck. It provides a clean graphical interface for grabbing Steam app ticket manifests using your Steam credentials and an App ID. Instead of running commands in a terminal, just fill in the fields and press Generate.
+
+The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket** for the specified App ID, and saves them as `.yaml` files in a `Tickets/` folder.
+<br><br>
+
 ### Download:
-Head to the [Releases](https://github.com/Ke619/UI-CRAB/releases/latest) page and download the latest `HeadcrabUpdater.Appimage`
+Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download `SLS-TG-x86_64.AppImage`
+
+<br>
+
+### How to use:
+1. Launch the AppImage
+2. Enter your **Steam username** and **password**
+3. Enter the **App ID** of the game you want to grab a ticket for
+4. Press **Generate**
+5. Approve the **Steam Guard** authentication on your phone when prompted
+6. Your tickets will be saved in the `Tickets/` folder
+
+<br>
+
+### Status Messages:
+| Status | Meaning |
+|--------|---------|
+| AWAITING STEAM GUARD AUTHENTICATION | Waiting for you to approve on your phone |
+| GENERATING YOUR TICKET... | Connected and fetching tickets |
+| TICKET GENERATED! | Both tickets saved successfully |
+| DISCONNECTED FROM STEAM | Connection lost or wrong credentials |
+| OWNERSHIP VERIFICATION FAILED | You may not own this App ID |
+| TICKET ENCRYPTION FAILED | Encrypted ticket could not be retrieved |
+| INVALID APP ID | The App ID entered is not a valid number |
+
+<br>
+
+### Features:
+- Clean portrait UI with wooden theme
+- Animated status indicators
+- Background music support — hold the logo for 3 seconds to toggle
+- Sound effects on hover and click
+- Dynamic logo that changes based on app state
+- Sound plays on successful ticket generation
+
+<br>
+
+### Notes:
+- Requires a valid Steam account with Steam Guard enabled
+- The app uses your credentials only to authenticate with Steam — nothing is stored or transmitted elsewhere
+- Tickets are saved locally in the `Tickets/` folder next to the AppImage
+- Steam Guard approval is done via the Steam mobile app (no code input needed)
+
+<br>
 
 <div align="center">
-  <img src="Demo.png" width="400"/>
+  Based on the ticket-grabber tool by <a href="https://github.com/AceSLS/SLSsteam">AceSLS/SLSsteam</a>
 </div>
-
----
-
-## Hidden Functionalities:
-
-### Background Music:
-Hold the logo for 3 seconds to toggle the background music on or off. The music will loop continuously and your preference is saved — if you had it playing when you closed the app, it will automatically resume on next launch.
-<br><br>
-<br>
 <div align="center">
   ♔ Based on <a href="https://github.com/Deadboy666/h3adcr-b">h3adcr-b</a> ♔
 </div>
