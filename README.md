@@ -22,7 +22,7 @@ The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket**
 <br><br>
 
 ### Download:
-Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download `SLS-TG-x86_64.AppImage`
+Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download `SLS-TG.AppImage`
 
 <br>
 
