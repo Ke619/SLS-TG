@@ -35,7 +35,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 3. Enter the **App ID** of the game you want to grab a ticket for
 4. Press **Generate**
 5. Approve the **Steam Guard** authentication on your phone when prompted
-6. Your tickets will be saved in the `Tickets/` folder (next to the AppImage)
+6. Your tickets will be saved in the `Tickets/` folder *(next to the AppImage)*
 
 ---
 
@@ -57,20 +57,18 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 ---
 
 ### Features:
-- Clean portrait UI with wooden theme
-- Animated status indicators
-- Background music support — hold the logo for 3 seconds to toggle
-- Sound effects on hover and click
 - Dynamic logo that changes based on app state
+- Status indicators
+- Background music support — *hold the logo for 3 seconds to toggle*
+- Sound effects on hover and click
 - Sound plays on successful ticket generation
 
 ---
 
 ### Notes:
 - Requires a valid Steam account with Steam Guard enabled
-- The app uses your credentials only to authenticate with Steam — nothing is stored or transmitted elsewhere
-- Tickets are saved locally in the `Tickets/` folder next to the AppImage
-- Steam Guard approval is done via the Steam mobile app (no code input needed)
+- The app uses your credentials only to authenticate with Steam — **nothing is stored or transmitted elsewhere**
+- Steam Guard approval is done via the Steam mobile app *(no code input needed)*
 
 <br>
 
