@@ -89,8 +89,12 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 
 **→ Release v1.1:**
 - Added Voice lines reacting to the operation results:
-    - On success: *「やったー！うまくいった！できた！」* *("Yay! It worked! I did it!")*
-    - On error: *「いいえ、うまくいきませんでした。もう一度試してください。」* *("No, it didn't work. Please try again.")*
+
+  | Operation Result | Voice Line | Translation |
+|-----------------|------------|-------------|
+| TICKET GENERATED! | やったー！うまくいった！できた！ | Yay! It worked! I did it! |
+| Error | いいえ、うまくいきませんでした。もう一度試してください。 | No, it didn't work. Please try again. |
+
   
 ---
 
