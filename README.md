@@ -102,7 +102,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 ---
 
 ### Notes:
-- Requires a valid Steam account with Steam Guard enabled
+- Requires a valid Steam account
 - The app uses your credentials only to authenticate with Steam — **nothing is stored or transmitted elsewhere**
 - Steam Guard approval is done via the Steam mobile app *(no code input needed)*
 
