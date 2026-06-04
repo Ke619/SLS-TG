@@ -64,7 +64,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 
 <div align="center">
   
-| Color | Status | Meaning |
+| 🎨 | Status | Meaning |
 |-------|--------|---------|
 | 🟡 | AWAITING STEAM GUARD AUTHENTICATION | Waiting for you to approve on your phone |
 | 🟡 | GENERATING YOUR TICKET... | Connected and fetching tickets |
