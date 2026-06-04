@@ -54,6 +54,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 | INVALID APP ID | The App ID entered is not a valid number |
 
 </div>
+
 ---
 
 ### Features:
