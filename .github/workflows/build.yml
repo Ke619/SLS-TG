@@ -21,7 +21,7 @@ jobs:
       - name: Build ticket-grabber for Windows
         run: |
           cd ticket-grabber
-          dotnet publish -r win-x64 --self-contained true -p:PublishSingleFile=true -c Release
+          dotnet publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:SelfContained=true -c Release
           copy bin\Release\net9.0\win-x64\publish\ticket-grabber.exe ..\ticket-grabber.exe
           cd ..
 
@@ -58,12 +58,22 @@ jobs:
           copy Icon.png deploy\
           copy ticket-grabber.exe deploy\
 
-      - name: Package as ZIP
+      - name: Convert Icon to ICO
         run: |
-          Compress-Archive -Path deploy\* -DestinationPath SLS-TG-Windows.zip
+          python -c "
+          from PIL import Image
+          img = Image.open('Icon.png')
+          img.save('Icon.ico', format='ICO', sizes=[(256,256),(128,128),(64,64),(32,32),(16,16)])
+          "
+
+      - name: Build Installer
+        run: |
+          copy installer.iss deploy\installer.iss
+          copy Icon.ico deploy\Icon.ico
+          iscc deploy\installer.iss
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: SLS-TG-Windows
-          path: SLS-TG-Windows.zip
+          path: SLS-TG-Setup.exe
