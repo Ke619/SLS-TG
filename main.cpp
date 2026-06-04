@@ -24,17 +24,12 @@
 class TicketWorker : public QThread {
     Q_OBJECT
 public:
-    QString binPath;
-    QString username;
-    QString password;
-    QString appid;
-    QString workDir;
+    QString binPath, username, password, appid, workDir;
 
     void run() override {
         QProcess proc;
         proc.setWorkingDirectory(workDir);
         proc.setProcessChannelMode(QProcess::MergedChannels);
-        // Pass args directly as list - shell never sees them, & in password is safe
         proc.start(binPath, {username, password, appid});
         if (!proc.waitForStarted(5000)) {
             emit lineReady("[ ERROR: Failed to start ticket-grabber ]");
@@ -80,8 +75,6 @@ class MainWindow : public QMainWindow {
     QTimer *dotTimer;
     int dotCount = 0;
     bool errorSet = false;
-    bool musicPlaying = false;
-    QTimer *holdTimer;
 
     QPixmap bgPixmap;
     QPixmap logoIdle, logoProcessing, logoSuccess, logoError;
@@ -116,6 +109,7 @@ class MainWindow : public QMainWindow {
             setLogo(logoError);
             generateBtn->setEnabled(false);
             playSfx(sadPlayer);
+            // Re-enable button when sad sound finishes
             connect(sadPlayer, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus s) {
                 if (s == QMediaPlayer::EndOfMedia) generateBtn->setEnabled(true);
             }, Qt::UniqueConnection);
@@ -149,14 +143,6 @@ protected:
             windowHandle()->startSystemMove();
     }
 
-    bool eventFilter(QObject *obj, QEvent *e) override {
-        if (obj == logoLabel) {
-            if (e->type() == QEvent::MouseButtonPress) holdTimer->start(3000);
-            else if (e->type() == QEvent::MouseButtonRelease) holdTimer->stop();
-        }
-        return QMainWindow::eventFilter(obj, e);
-    }
-
 public:
     MainWindow(const QString &dir) : appDir(dir) {
         setWindowTitle("SLS Ticket Grabber");
@@ -171,9 +157,7 @@ public:
         logoError     = QPixmap(appDir + "/L2.png");
         logoSuccess   = QPixmap(appDir + "/L3.png");
 
-        dotTimer  = new QTimer(this);
-        holdTimer = new QTimer(this);
-        holdTimer->setSingleShot(true);
+        dotTimer = new QTimer(this);
 
         musicPlayer = makePlayer(musicOut,  "BGM.wav");
         clickPlayer = makePlayer(clickOut,  "Click.mp3");
@@ -182,15 +166,18 @@ public:
         happyPlayer = makePlayer(happyOut,  "Happy.mp3");
         sadPlayer   = makePlayer(sadOut,    "Sad.mp3");
 
+        // FIX 4: Music plays on boot, loops forever
         connect(musicPlayer, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus s) {
             if (s == QMediaPlayer::EndOfMedia) { musicPlayer->setPosition(0); musicPlayer->play(); }
         });
-        connect(holdTimer, &QTimer::timeout, this, [this]() {
-            if (musicPlaying) { musicPlayer->stop(); musicPlaying = false; }
-            else { musicPlayer->play(); musicPlaying = true; }
+        connect(musicPlayer, &QMediaPlayer::playbackStateChanged, this, [this](QMediaPlayer::PlaybackState s) {
+            if (s == QMediaPlayer::StoppedState) { musicPlayer->play(); }
         });
 
         setupUI();
+
+        // Start music on boot
+        QTimer::singleShot(500, this, [this]() { musicPlayer->play(); });
     }
 
     void setupUI() {
@@ -202,19 +189,15 @@ public:
         vbox->setContentsMargins(20, 10, 20, 50);
         vbox->setSpacing(8);
 
+        // Logo - no event filter needed (removed hold timer)
         logoLabel = new QLabel();
         logoLabel->setAlignment(Qt::AlignCenter);
         logoLabel->setStyleSheet("background: transparent;");
         logoLabel->setFixedHeight(390);
         setLogo(logoIdle);
-        logoLabel->installEventFilter(this);
         vbox->addWidget(logoLabel);
 
-        statusLabel = new QLabel("");
-        statusLabel->setAlignment(Qt::AlignCenter);
-        statusLabel->setStyleSheet("color: #e6cc00; font-weight: bold; font-size: 13px; background: transparent;");
-        vbox->addWidget(statusLabel);
-
+        // Fields
         QString es = "background: rgba(255,255,255,180); color: #000000; border: 3px solid #000000; padding: 6px; font-size: 13px;";
         usernameEdit = new QLineEdit(); usernameEdit->setPlaceholderText("Steam username"); usernameEdit->setStyleSheet(es);
         passwordEdit = new QLineEdit(); passwordEdit->setPlaceholderText("Steam password"); passwordEdit->setEchoMode(QLineEdit::Password); passwordEdit->setStyleSheet(es);
@@ -223,6 +206,13 @@ public:
         vbox->addWidget(passwordEdit);
         vbox->addWidget(appidEdit);
 
+        // FIX 5: Status label BELOW input fields, ABOVE generate button
+        statusLabel = new QLabel("");
+        statusLabel->setAlignment(Qt::AlignCenter);
+        statusLabel->setStyleSheet("color: #e6cc00; font-weight: bold; font-size: 13px; background: transparent;");
+        vbox->addWidget(statusLabel);
+
+        // Generate button
         generateBtn = new QPushButton("GENERATE");
         generateBtn->setFixedSize(220, 44);
         generateBtn->setStyleSheet(
@@ -232,15 +222,22 @@ public:
         );
         connect(generateBtn, &QPushButton::clicked, this, &MainWindow::onGenerate);
         connect(generateBtn, &QPushButton::clicked, this, [this](){ playSfx(clickPlayer); });
+
+        // FIX 1: Hover SFX for generate button
+        generateBtn->installEventFilter(this);
+
         vbox->addWidget(generateBtn, 0, Qt::AlignCenter);
         vbox->addStretch();
 
+        // Bottom row
         QHBoxLayout *bot = new QHBoxLayout();
+
         QPushButton *infoBtn = new QPushButton("i");
         infoBtn->setFixedSize(22, 22);
         infoBtn->setStyleSheet("QPushButton{background:#5dade2;color:#fff;border:2px solid #5dade2;border-radius:11px;font-size:11px;font-weight:bold;}QPushButton:hover{background:#85c1e9;}");
         connect(infoBtn, &QPushButton::clicked, [](){ QDesktopServices::openUrl(QUrl("https://github.com/Ke619/SLS-TG")); });
         connect(infoBtn, &QPushButton::clicked, this, [this](){ playSfx(clickPlayer); });
+        infoBtn->installEventFilter(this);
 
         QLabel *verLabel = new QLabel("Build: 2026.06.04.rv1.1");
         verLabel->setAlignment(Qt::AlignCenter);
@@ -251,6 +248,7 @@ public:
         closeBtn->setStyleSheet("QPushButton{background:#cc2200;color:#fff;border:2px solid #cc2200;border-radius:11px;font-size:11px;font-weight:bold;}QPushButton:hover{background:#ff3300;}");
         connect(closeBtn, &QPushButton::clicked, this, &QMainWindow::close);
         connect(closeBtn, &QPushButton::clicked, this, [this](){ playSfx(clickPlayer); });
+        closeBtn->installEventFilter(this);
 
         bot->addWidget(infoBtn);
         bot->addStretch();
@@ -258,6 +256,15 @@ public:
         bot->addStretch();
         bot->addWidget(closeBtn);
         vbox->addLayout(bot);
+    }
+
+    // FIX 1: Event filter for hover SFX on all buttons
+    bool eventFilter(QObject *obj, QEvent *e) override {
+        if (e->type() == QEvent::Enter) {
+            if (qobject_cast<QPushButton*>(obj))
+                playSfx(hoverPlayer);
+        }
+        return QMainWindow::eventFilter(obj, e);
     }
 
 public slots:
@@ -287,14 +294,22 @@ public slots:
         worker->workDir  = downloads;
 
         connect(worker, &TicketWorker::lineReady, this, [this](QString line) {
-            if (line.contains("APPROVE STEAM GUARD"))
-                { dotTimer->stop(); setStatus("AWAITING STEAM GUARD AUTHENTICATION", "#e6cc00"); }
-            else if (line.contains("Connected to Steam"))
+            if (line.contains("Connected to Steam"))
                 { dotTimer->stop(); setStatus("AWAITING STEAM GUARD AUTHENTICATION", "#e6cc00"); }
             else if (line.contains("Logged in as"))
                 { startDots("GENERATING YOUR TICKET"); setLogo(logoProcessing); }
-            else if (line.contains("Saved"))
-                { dotTimer->stop(); setStatus("TICKET GENERATED!", "#228822"); setLogo(logoSuccess); playSfx(ticketPlayer); playSfx(happyPlayer); generateBtn->setEnabled(true); }
+            else if (line.contains("Saved")) {
+                // FIX 2: Play ticket and happy only once, not twice
+                if (!errorSet) {
+                    dotTimer->stop();
+                    setStatus("TICKET GENERATED!", "#228822");
+                    setLogo(logoSuccess);
+                    playSfx(ticketPlayer);
+                    // FIX 2: Delay happy.mp3 slightly so they don't clash
+                    QTimer::singleShot(300, this, [this](){ playSfx(happyPlayer); });
+                    generateBtn->setEnabled(true);
+                }
+            }
             else if (line.contains("is not a number"))
                 setStatus("INVALID APP ID", "#ff3300", true);
             else if (line.contains("Failed to get Handlers"))
@@ -311,8 +326,11 @@ public slots:
 
         connect(worker, &TicketWorker::done, this, [this](int code) {
             dotTimer->stop();
-            if (code != 0 && !errorSet)
+            // FIX 3: Always re-enable button on non-error exit, error handled by sad sound
+            if (code != 0 && !errorSet) {
                 setStatus("CRITICAL ERROR", "#ff3300", true);
+                // Button re-enabled when sad sound finishes (in setStatus)
+            }
             if (code == 0 && !errorSet)
                 generateBtn->setEnabled(true);
         });
