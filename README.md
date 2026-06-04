@@ -3,7 +3,6 @@
 # SLS Ticket Grabber (GUI)
 </div>
 
-
 <div align="center">
   <img src="Icon.png" width="200"/>
 </div>
@@ -21,7 +20,7 @@
 ### What is it?:
 SLS Ticket Grabber is a lightweight desktop app for SteamOS/SteamDeck. It provides a clean graphical interface for grabbing Steam app ticket manifests using your Steam credentials and an App ID. Instead of running commands in a terminal, just fill in the fields and press Generate.
 
-The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket** for the specified App ID, and saves them as `.yaml` files in a `Tickets/` folder next to the AppImage, ready to be used with SLSsteam
+The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket** for the specified App ID, and saves them as `.yaml` files in a `Tickets/` folder ready to be used with SLSsteam
 
 
 <p align="center">
@@ -57,7 +56,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 3. Enter the **App ID** of the game you want to grab a ticket for
 4. Press **Generate**
 5. Approve the **Steam Guard** authentication on your phone when prompted
-6. Your tickets will be saved in the `Tickets/` folder *(The folder will be created next to the AppImage)*
+6. Your tickets will be saved in the `Tickets/` folder *(~/Downloads/Tickets/)*
 
 ---
 
@@ -85,7 +84,10 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 - Background music support — *hold the logo for 3 seconds to toggle*
 - Sound effects on hover and click
 - Sound plays on successful ticket generation
-
+- Voices Lines
+    - On success: *「やったー！うまくいった！できた！」* ("Yay! It worked! I did it!")
+    - On error: *「いいえ、うまくいきませんでした。もう一度試してください。」* ("No, it didn't work. Please try again.")
+  
 ---
 
 ### Notes:
@@ -102,8 +104,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 - Background Music For SLS-TG (BGM.wav) © 2026 Ke619. Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — free to use with attribution.
 
 <br><br>
-やったー！ うまくいった！できた！ 
-いいえ、うまくいきませんでした。もう一度試してください。
+
 <div align="center">
   Based on the ticket-grabber tool by <a href="https://github.com/AceSLS/SLSsteam">AceSLS</a>
 </div>
