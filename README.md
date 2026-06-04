@@ -92,6 +92,12 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 - The app uses your credentials only to authenticate with Steam — **nothing is stored or transmitted elsewhere**
 - Steam Guard approval is done via the Steam mobile app *(no code input needed)*
 
+---
+
+### Legal:
+This project was developed with the knowledge and consent of [AceSLS](https://github.com/AceSLS), the author of [SLSsteam](https://github.com/AceSLS/SLSsteam).
+This project is licensed under the [AGPL-3.0 License](LICENSE).
+
 <br><br>
 
 
