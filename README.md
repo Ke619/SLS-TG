@@ -40,7 +40,9 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 ---
 
 ### Status Messages:
+
 <div align="center">
+  
 | Status | Meaning |
 |--------|---------|
 | AWAITING STEAM GUARD AUTHENTICATION | Waiting for you to approve on your phone |
@@ -50,6 +52,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 | OWNERSHIP VERIFICATION FAILED | You may not own this App ID |
 | TICKET ENCRYPTION FAILED | Encrypted ticket could not be retrieved |
 | INVALID APP ID | The App ID entered is not a valid number |
+
 </div>
 ---
 
