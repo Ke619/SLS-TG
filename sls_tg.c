@@ -73,7 +73,7 @@ static const char *CSS =
     "#log text { background-color: #000000; color: #aaaaaa; }"
     "scrolledwindow { }"
     "#field_label { color: #aaaaaa; font-size: 11px; letter-spacing: 2px; }"
-    "entry { background-color: #ffffff; color: #000000; border: 1px solid #000000;"
+    "entry { background-color: #ffffff; color: #000000; border: 3px solid #000000;"
     "  border-radius: 0; padding: 6px 10px; font-size: 13px; min-height: 32px; }"
     "entry:focus { border-color: #000000; background-color: #ffffff; color: #000000; }"
     "entry { -gtk-icon-source: none; }"
