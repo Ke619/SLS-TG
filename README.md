@@ -87,7 +87,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 - Sound effects on hover and click
 - Sound plays on successful ticket generation
 
-**→ Release v1.2:**
+**→ Release v1.1:**
 - Added Voice lines reacting to the output **(v1.2)**:
     - On success: *「やったー！うまくいった！できた！」* *("Yay! It worked! I did it!")*
     - On error: *「いいえ、うまくいきませんでした。もう一度試してください。」* *("No, it didn't work. Please try again.")*
