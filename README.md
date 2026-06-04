@@ -41,7 +41,7 @@ sudo pacman -S gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-l
 sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav
 ```
 
-→ **.NET 9 Runtime** — bundled inside the AppImage, no installation needed. - *(v9.0.16)*
+→ **.NET 9 Runtime** — bundled inside the AppImage, no installation needed.
 
 ---
 
