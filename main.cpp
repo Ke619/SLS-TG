@@ -19,26 +19,41 @@
 #include <QMediaPlayer>
 #include <QAudioOutput>
 #include <QWindow>
+#include <QFile>
 
 class TicketWorker : public QThread {
     Q_OBJECT
 public:
-    QString cmd;
+    QString binPath;
+    QString username;
+    QString password;
+    QString appid;
     QString workDir;
+
     void run() override {
         QProcess proc;
         proc.setWorkingDirectory(workDir);
         proc.setProcessChannelMode(QProcess::MergedChannels);
-        proc.start("cmd.exe", {"/c", cmd});
-        proc.waitForStarted();
-        while (proc.waitForReadyRead(-1)) {
+        // Pass args directly as list - shell never sees them, & in password is safe
+        proc.start(binPath, {username, password, appid});
+        if (!proc.waitForStarted(5000)) {
+            emit lineReady("[ ERROR: Failed to start ticket-grabber ]");
+            emit done(1);
+            return;
+        }
+        while (proc.state() != QProcess::NotRunning) {
+            proc.waitForReadyRead(200);
             QString out = proc.readAll();
-            for (auto &l : out.split('\n')) {
+            for (auto l : out.split('\n')) {
                 l = l.trimmed().remove('\r');
                 if (!l.isEmpty()) emit lineReady(l);
             }
         }
-        proc.waitForFinished(-1);
+        QString remaining = proc.readAll();
+        for (auto l : remaining.split('\n')) {
+            l = l.trimmed().remove('\r');
+            if (!l.isEmpty()) emit lineReady(l);
+        }
         emit done(proc.exitCode());
     }
 signals:
@@ -150,7 +165,7 @@ public:
         setAttribute(Qt::WA_TranslucentBackground);
         setWindowIcon(QIcon(appDir + "/Icon.png"));
 
-        bgPixmap = QPixmap(appDir + "/Bg.png");
+        bgPixmap      = QPixmap(appDir + "/Bg.png");
         logoIdle      = QPixmap(appDir + "/L0.png");
         logoProcessing= QPixmap(appDir + "/L1.png");
         logoError     = QPixmap(appDir + "/L2.png");
@@ -187,7 +202,6 @@ public:
         vbox->setContentsMargins(20, 10, 20, 50);
         vbox->setSpacing(8);
 
-        // Logo
         logoLabel = new QLabel();
         logoLabel->setAlignment(Qt::AlignCenter);
         logoLabel->setStyleSheet("background: transparent;");
@@ -196,13 +210,11 @@ public:
         logoLabel->installEventFilter(this);
         vbox->addWidget(logoLabel);
 
-        // Status
         statusLabel = new QLabel("");
         statusLabel->setAlignment(Qt::AlignCenter);
         statusLabel->setStyleSheet("color: #e6cc00; font-weight: bold; font-size: 13px; background: transparent;");
         vbox->addWidget(statusLabel);
 
-        // Fields
         QString es = "background: rgba(255,255,255,180); color: #000000; border: 3px solid #000000; padding: 6px; font-size: 13px;";
         usernameEdit = new QLineEdit(); usernameEdit->setPlaceholderText("Steam username"); usernameEdit->setStyleSheet(es);
         passwordEdit = new QLineEdit(); passwordEdit->setPlaceholderText("Steam password"); passwordEdit->setEchoMode(QLineEdit::Password); passwordEdit->setStyleSheet(es);
@@ -211,7 +223,6 @@ public:
         vbox->addWidget(passwordEdit);
         vbox->addWidget(appidEdit);
 
-        // Generate
         generateBtn = new QPushButton("GENERATE");
         generateBtn->setFixedSize(220, 44);
         generateBtn->setStyleSheet(
@@ -224,9 +235,7 @@ public:
         vbox->addWidget(generateBtn, 0, Qt::AlignCenter);
         vbox->addStretch();
 
-        // Bottom row
         QHBoxLayout *bot = new QHBoxLayout();
-
         QPushButton *infoBtn = new QPushButton("i");
         infoBtn->setFixedSize(22, 22);
         infoBtn->setStyleSheet("QPushButton{background:#5dade2;color:#fff;border:2px solid #5dade2;border-radius:11px;font-size:11px;font-weight:bold;}QPushButton:hover{background:#85c1e9;}");
@@ -270,15 +279,17 @@ public slots:
         QString downloads = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
         QDir().mkpath(downloads);
 
-        QString binPath = appDir + "/ticket-grabber.exe";
-        QString cmd = QString("\"%1\" \"%2\" \"%3\" \"%4\"").arg(binPath, user, pass, appid);
-
         auto *worker = new TicketWorker();
-        worker->cmd     = cmd;
-        worker->workDir = downloads;
+        worker->binPath  = appDir + "/ticket-grabber.exe";
+        worker->username = user;
+        worker->password = pass;
+        worker->appid    = appid;
+        worker->workDir  = downloads;
 
         connect(worker, &TicketWorker::lineReady, this, [this](QString line) {
-            if (line.contains("Connected to Steam"))
+            if (line.contains("APPROVE STEAM GUARD"))
+                { dotTimer->stop(); setStatus("AWAITING STEAM GUARD AUTHENTICATION", "#e6cc00"); }
+            else if (line.contains("Connected to Steam"))
                 { dotTimer->stop(); setStatus("AWAITING STEAM GUARD AUTHENTICATION", "#e6cc00"); }
             else if (line.contains("Logged in as"))
                 { startDots("GENERATING YOUR TICKET"); setLogo(logoProcessing); }
@@ -302,7 +313,8 @@ public slots:
             dotTimer->stop();
             if (code != 0 && !errorSet)
                 setStatus("CRITICAL ERROR", "#ff3300", true);
-            if (code == 0) generateBtn->setEnabled(true);
+            if (code == 0 && !errorSet)
+                generateBtn->setEnabled(true);
         });
 
         connect(worker, &TicketWorker::done, worker, &QObject::deleteLater);
