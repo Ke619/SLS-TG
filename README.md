@@ -54,7 +54,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 3. Enter the **App ID** of the game you want to grab a ticket for
 4. Press **Generate**
 5. Approve the **Steam Guard** authentication on your phone when prompted
-6. Your tickets will be saved in the `Tickets/` folder *(The Folder will be created next to the AppImage)*
+6. Your tickets will be saved in the `Tickets/` Folder *(The Folder will be created next to the AppImage)*
 
 ---
 
