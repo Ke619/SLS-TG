@@ -35,11 +35,12 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 3. Enter the **App ID** of the game you want to grab a ticket for
 4. Press **Generate**
 5. Approve the **Steam Guard** authentication on your phone when prompted
-6. Your tickets will be saved in the `Tickets/` folder
+6. Your tickets will be saved in the `Tickets/` folder (next to the AppImage)
 
 ---
 
 ### Status Messages:
+<div align="center">
 | Status | Meaning |
 |--------|---------|
 | AWAITING STEAM GUARD AUTHENTICATION | Waiting for you to approve on your phone |
@@ -49,7 +50,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 | OWNERSHIP VERIFICATION FAILED | You may not own this App ID |
 | TICKET ENCRYPTION FAILED | Encrypted ticket could not be retrieved |
 | INVALID APP ID | The App ID entered is not a valid number |
-
+</div>
 ---
 
 ### Features:
