@@ -11,7 +11,7 @@
 
 <div align="center">
   
-  A GUI wrapper for *SLSSteam Ticket Grabber Tool* — built for SteamDeck.
+  A GUI wrapper for *SLSsteam Ticket Grabber Tool* — built for SteamDeck.
   
 </div>
 
@@ -20,7 +20,7 @@
 ### What is it?:
 SLS Ticket Grabber is a lightweight desktop app for SteamOS/SteamDeck. It provides a clean graphical interface for grabbing Steam app ticket manifests using your Steam credentials and an App ID. Instead of running commands in a terminal, just fill in the fields and press Generate.
 
-The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket** for the specified App ID, and saves them as `.yaml` files in a `Tickets/` folder next to the AppImage
+The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket** for the specified App ID, and saves them as `.yaml` files in a `Tickets/` folder next to the AppImage ready to be used with SLSsteam
 <br><br>
 
 ### Download:
