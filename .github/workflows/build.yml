@@ -71,7 +71,9 @@ jobs:
         run: |
           copy installer.iss deploy\installer.iss
           copy Icon.ico deploy\Icon.ico
-          iscc deploy\installer.iss
+          cd deploy
+          iscc installer.iss
+          copy SLS-TG-Setup.exe ..\SLS-TG-Setup.exe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
