@@ -83,7 +83,7 @@ static const char *CSS =
     "#sep { background-color: #2a0000; min-width: 1px; }"
     "#footer { color: #aaaaaa; font-size: 10px; }"
     "#dim_layer { background-color: rgba(0,0,0,0.75); }"
-    "#version_label { color: #000000; font-size: 9px; letter-spacing: 1px; }";
+    "#version_label { color: #ffffff; font-size: 9px; letter-spacing: 1px; }";
 
 static void save_music(int playing) {
     const char *home = g_get_home_dir();
@@ -704,7 +704,12 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_margin_start(bottom_row, 10);
     gtk_widget_set_margin_end(bottom_row, 10);
 
-    gtk_box_pack_start(GTK_BOX(bottom_row), footer_box, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(bottom_row), footer_box, FALSE, FALSE, 0);
+
+    /* Version label centered */
+    GtkWidget *version_label = gtk_label_new("Build: 2026.06.04.v.1.2");
+    gtk_widget_set_name(version_label, "version_label");
+    gtk_box_pack_start(GTK_BOX(bottom_row), version_label, TRUE, TRUE, 0);
 
     w->close_btn = gtk_button_new_with_label("✕");
     gtk_widget_set_name(w->close_btn, "close_btn");
