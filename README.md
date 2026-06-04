@@ -3,6 +3,7 @@
 # SLS Ticket Grabber (GUI)
 </div>
 
+
 <div align="center">
   <img src="Icon.png" width="200"/>
 </div>
