@@ -73,6 +73,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 | 🔴 | OWNERSHIP VERIFICATION FAILED | You may not own this App ID |
 | 🔴 | TICKET ENCRYPTION FAILED | Encrypted ticket could not be retrieved |
 | 🔴 | INVALID APP ID | The App ID entered is not a valid number |
+| 🔴 | CRITICAL ERROR | Something went wrong. (usually can be fixed by installing **.NET 9 Runtime** on The Windows Build)  |
 
 </div>
 
