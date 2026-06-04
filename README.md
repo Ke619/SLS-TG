@@ -96,9 +96,12 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 
 ### Legal:
 → This project was developed with the knowledge and consent of [AceSLS](https://github.com/AceSLS), the author of [SLSsteam](https://github.com/AceSLS/SLSsteam).
-This project is licensed under the [AGPL-3.0 License](LICENSE).
 
 → Character artwork used in logos belongs to their respective copyright holders (Monogatari Series © NisiOisin / Kodansha / Aniplex). Used for non-commercial purposes only.
+
+→ This project is licensed under the [AGPL-3.0 License](LICENSE).
+
+→ Background Music For SLS-TG (BGM.wav) © 2026 Ke619. Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — free to use with attribution.
 
 <br><br>
 
