@@ -94,8 +94,8 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
   
 | Operation Result | Voice Line | Translation |
 |-----------------|------------|-------------|
-| TICKET GENERATED! | やったー！うまくいった！できた！ | Yay! It worked! I did it! |
-| *Any Error* | いいえ、うまくいきませんでした。もう一度試してください。 | No, it didn't work. Please try again. |
+| TICKET GENERATED! | やったー！うまくいった！できた！ | Yayー! It worked! I did it! |
+| *Any Error* | いいえ、うまくいきませんでした。もう一度試してください。 | No, it didn't work. Pleaseーtry again. |
 
 </div>
   
