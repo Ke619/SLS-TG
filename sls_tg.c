@@ -707,7 +707,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(bottom_row), footer_box, FALSE, FALSE, 0);
 
     /* Version label centered */
-    GtkWidget *version_label = gtk_label_new("Build: 2026.06.04.v.1.2");
+    GtkWidget *version_label = gtk_label_new("Build: 2026.06.04.rv1.1");
     gtk_widget_set_name(version_label, "version_label");
     gtk_box_pack_start(GTK_BOX(bottom_row), version_label, TRUE, TRUE, 0);
 
