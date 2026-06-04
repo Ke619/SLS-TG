@@ -50,7 +50,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
  <br>
 ### How to use:
 1. Launch the AppImage
-2. Enter your **Steam username** and **password**
+2. Enter your **Steam username** and **Steam password**
 3. Enter the **App ID** of the game you want to grab a ticket for
 4. Press **Generate**
 5. Approve the **Steam Guard** authentication on your phone when prompted
