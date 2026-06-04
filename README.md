@@ -69,7 +69,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 <br>
 
 <div align="center">
-  Based on the ticket-grabber tool by <a href="https://github.com/AceSLS/SLSsteam">AceSLS/SLSsteam</a>
+  Based on the ticket-grabber tool by <a href="https://github.com/AceSLS/SLSsteam">AceSLS</a>
 </div>
 
 
