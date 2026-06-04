@@ -32,7 +32,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 ### Dependencies:
 The AppImage is self-contained for SteamDeck/SteamOS. If running on regular Linux (Arch, Ubuntu, etc.) make sure the following are installed:
 
-**Audio:**
+→ **Audio:**
 ```bash
 # Arch Linux
 sudo pacman -S gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-libav pipewire pipewire-pulse wireplumber
@@ -41,7 +41,7 @@ sudo pacman -S gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-l
 sudo apt install gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav
 ```
 
-**.NET 9 Runtime** — bundled inside the AppImage, no installation needed.
+→ **.NET 9 Runtime** — bundled inside the AppImage, no installation needed.**Audio:**
 
 ---
 
