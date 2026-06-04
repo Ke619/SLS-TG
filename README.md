@@ -22,10 +22,12 @@ SLS Ticket Grabber is a lightweight desktop app for SteamOS/SteamDeck. It provid
 
 The app fetches both an **App Ownership Ticket** and an **Encrypted App Ticket** for the specified App ID, and saves them as `.yaml` files in a `Tickets/` folder next to the AppImage ready to be used with SLSsteam
 
+---
+
 ### Download:
 Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and download `SLS-TG.AppImage`
 
-<br>
+---
 
 ### How to use:
 1. Launch the AppImage
@@ -35,7 +37,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 5. Approve the **Steam Guard** authentication on your phone when prompted
 6. Your tickets will be saved in the `Tickets/` folder
 
-<br>
+---
 
 ### Status Messages:
 | Status | Meaning |
@@ -48,7 +50,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 | TICKET ENCRYPTION FAILED | Encrypted ticket could not be retrieved |
 | INVALID APP ID | The App ID entered is not a valid number |
 
-<br>
+---
 
 ### Features:
 - Clean portrait UI with wooden theme
@@ -58,7 +60,7 @@ Head to the [Releases](https://github.com/Ke619/SLS-TG/releases/latest) page and
 - Dynamic logo that changes based on app state
 - Sound plays on successful ticket generation
 
-<br>
+---
 
 ### Notes:
 - Requires a valid Steam account with Steam Guard enabled
